@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Multi-Page Quotation Maker</title>
+
+    <style>
+        /* Base Reset and Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* === CHANGED BACKGROUND HERE === */
+            background-color: #1a1a2e; /* Dark blue/purple background */
+            color: #343a40;
+            line-height: 1.6;
+        }
+
+        /* --- Page Structure --- */
+        .page-container {
+            width: 210mm; /* A4 width */
+            margin: 30px auto;
+            background: white; /* Keep pages white */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            counter-reset: page; /* Initialize page counter */
+        }
+
+        .page {
+            min-height: 297mm; /* A4 height */
+            padding: 25mm; /* Default margins */
+            box-sizing: border-box;
+            position: relative;
+            outline: 1px dashed #eee; /* Visual separator in browser */
+        }
+
+        .page:not(:first-child) {
+             outline-offset: -1px; /* Adjust outline position */
+        }
+
+
+        /* --- Page Numbering (for print) --- */
+         .page::after {
+            counter-increment: page;
+            content: "Page " counter(page);
+            position: absolute;
+            bottom: 15mm; /* Position within the @page margin area */
+            right: 20mm;
+            font-size: 10px;
+            color: #6c757d;
+            display: none; /* Hide in browser view */
+         }
+
+
+        /* --- Print Styles --- */
+        @page {
+            size: A4; /* Specify page size */
+            margin: 20mm; /* Define print margins - adjust as needed */
+        }
+
+        @media print {
+            body { background: none; margin: 0; padding: 0;} /* Remove dark bg for print */
+            .page-container {
+                box-shadow: none;
+                margin: 0;
+                padding: 0; /* Let @page handle margins */
+                width: auto;
+                 outline: none;
+            }
+             .page {
+                min-height: auto; /* Allow content height */
+                padding: 0; /* Padding is handled by @page margins */
+                margin: 0;
+                outline: none; /* Hide outline when printing */
+                page-break-after: always; /* Force page break after each page */
+            }
+            .page:last-child {
+                page-break-after: auto; /* No break after the last page */
+            }
+
+             .page::after {
+                 display: block; /* Show CSS page numbers on print */
+             }
+
+            .controls, #logo-upload, #signature-upload, #stamp-upload, #upload-label { /* Hide controls AND file inputs/labels */
+                display: none !important;
+            }
+            /* Force print backgrounds */
+            table th { background-color: #e67e22 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; } /* Slightly softer orange */
+            .detail-box { background-color: #e9ecef !important; border-color: #dee2e6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .payment { background-color: #f0fdf4 !important; border-color: #a7f3d0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bank { background-color: #fff7ed !important; border-color: #fed7aa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .total-row td { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .notes-box { background-color: #f0f8ff !important; border-color: #0d9488 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+
+        /* --- Editable Content Styling --- */
+        [contenteditable] {
+            transition: outline 0.2s ease, background-color 0.2s ease;
+             padding: 2px 4px; /* Add slight padding for better focus indication */
+             margin: -2px -4px; /* Counteract padding */
+             border-radius: 3px;
+        }
+        [contenteditable]:hover {
+            outline: 1px dashed #e67e22;
+            cursor: text;
+             background-color: #fff9e6; /* Slight bg on hover */
+        }
+        [contenteditable]:focus {
+            outline: 2px solid #0d9488;
+            background-color: #e6fffa;
+        }
+        h1[contenteditable], h2[contenteditable], h3[contenteditable], strong[contenteditable] {
+             display: inline-block; /* Allow focus outline to wrap properly */
+        }
+         p[contenteditable], span[contenteditable], div[contenteditable] {
+              display: inline-block; /* Better focus outline */
+              min-width: 10px; /* Prevent collapsing when empty */
+         }
+
+
+        /* --- Header Styles --- */
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #e67e22; padding-bottom: 15px; margin-bottom: 20px; }
+        .company-info h1 { font-size: 24px; color: #e67e22; margin: 0 0 5px 0; }
+        .company-info p { margin: 2px 0; font-size: 12px; color: #495057; }
+        .quotation-title { font-size: 28px; font-weight: bold; color: #e67e22; margin-bottom: 5px; text-align: right; }
+        .quotation-date { font-size: 14px; text-align: right; color: #495057;}
+
+        .detail-box { background-color: #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border: 1px solid #dee2e6;}
+        .detail-box div { font-size: 14px; }
+        .detail-box strong { font-weight: bold; color: #343a40; }
+
+        /* --- Table Styles --- */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+        table th, table td { border: 1px solid #dee2e6; padding: 10px 12px; text-align: left; vertical-align: top;}
+        table th { background-color: #e67e22; color: white; font-weight: bold; }
+        table .total-row td { background-color: #f8f9fa; font-weight: bold; font-size: 16px; color: #0d9488; }
+        .description-cell { font-size: 12px; }
+        .align-center { text-align: center; }
+        .align-right { text-align: right; }
+
+        /* --- Payment/Highlight Boxes --- */
+        .highlight-grid { display: flex; gap: 20px; margin-bottom: 30px; }
+        .highlight-box { flex: 1; padding: 15px; border-radius: 6px; font-size: 13px; border: 1px solid; }
+        .payment { background-color: #f0fdf4; border-color: #a7f3d0; }
+        .bank { background-color: #fff7ed; border-color: #fed7aa; }
+        .highlight-box h3 { font-size: 16px; margin-top: 0; border-bottom: 1px solid #ced4da; padding-bottom: 5px; margin-bottom: 10px; font-weight: bold;}
+        .net-price { font-size: 18px; font-weight: bold; color: #059669; margin-top: 10px; padding-top: 8px; border-top: 1px solid #ced4da; }
+
+        /* --- Footer/Signature --- */
+        .signature-area { display: flex; justify-content: flex-end; margin-top: 40px; }
+        .signature-box { text-align: center; width: 200px; }
+        .signature-line { border-top: 1px solid #495057; padding-top: 5px; margin-top: 50px; }
+        .signature-box p { font-size: 11px; margin: 5px 0;}
+        .signature-uploads img { max-height: 45px; opacity: 0.8; margin: 0 5px;}
+
+        /* --- General Content Sections --- */
+        .content-section { margin-bottom: 30px;}
+        .content-section h2 {
+            font-size: 18px;
+            color: #e67e22;
+            border-bottom: 2px solid #e67e22;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .content-section p, .content-section li {
+            font-size: 12px;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+         .content-section ul, .content-section ol {
+             padding-left: 20px;
+         }
+        .notes-box {
+             background-color: #f0f8ff;
+             border-left: 4px solid #0d9488;
+             padding: 15px;
+             margin-bottom: 25px;
+             font-size: 13px;
+             border-radius: 4px;
+        }
+        .notes-box strong { color: #0d9488; font-weight: bold; }
+
+
+        /* --- Controls Bar --- */
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: #343a40; /* Darker gray */
+            padding: 12px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            text-align: center;
+        }
+        .sticky-controls button {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 9px 16px; /* Slightly adjusted padding */
+            margin: 0 6px;
+            border-radius: 4px; /* Softer radius */
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: background-color 0.2s ease, transform 0.1s ease; /* Added transition */
+        }
+        .sticky-controls button:hover {
+            background-color: #d35400; /* Darker orange on hover */
+             transform: translateY(-1px); /* Slight lift */
+        }
+         .sticky-controls button:active {
+             transform: translateY(0px); /* Push down on click */
+         }
+
+        #save-status {
+             color: #198754; /* Green */
+             font-weight: bold;
+             margin-right: 20px;
+             font-size: 13px;
+             transition: color 0.5s ease;
+        }
+        .status-typing { color: #ffc107 !important; } /* Yellow */
+        .status-saving { color: #0dcaf0 !important; } /* Cyan */
+        .status-error { color: #dc3545 !important; } /* Red */
+
+        /* Utility */
+        .small-text { font-size: 11px; color: #6c757d; }
+
+    </style>
+</head>
+<body>
+
+    <div class="sticky-controls controls">
+        <span id="save-status">Saved!</span>
+        <button onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button onclick="clearData()">🗑️ Clear All Data</button>
+        <button onclick="alert('Click on any text (like names, prices, descriptions, terms etc.) inside the quotation pages to edit it directly. Upload images using the buttons near them. Changes save automatically.')">💡 How to Edit?</button>
+    </div>
+
+    <div class="page-container">
+
+        <div class="page" id="page1">
+            <div class="header">
+                <div class="company-info">
+                    <img id="logo-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; border: 1px dashed #ccc;" alt="Company Logo">
+                    <input type="file" id="logo-upload" accept="image/*" style="display: block; margin-bottom: 10px; font-size: 10px;" onchange="uploadImage(this, 'logo-image')">
+
+                    <h1 contenteditable="true" id="company-name">SRIYAVEDA SOLAR ENERGIES</h1>
+                    <p contenteditable="true" id="company-cell">Cell: 9440788850</p>
+                    <p contenteditable="true" id="company-address1">F No-403, YALAKKAYA STREET, NEAR CLOCK TOWER</p>
+                    <p contenteditable="true" id="company-address2">Eluru - 534001, Andhra Pradesh</p>
+                    <p contenteditable="true" id="company-gst" style="margin-top: 5px; font-weight: bold;">GST: 37AEUPE97947G1ZU</p>
+                </div>
+                <div>
+                    <div class="quotation-title">QUOTATION</div>
+                    <p class="quotation-date">DATE: <span contenteditable="true" id="date">24/10/2025</span></p>
+                    <p class="quotation-date" style="margin-top: 5px;">Ref No: <span contenteditable="true" id="ref-no">Q-SVSE-2025-101</span></p>
+                </div>
+            </div>
+
+            <div class="detail-box">
+                <div>
+                    <strong>TO: </strong><br>
+                    <span contenteditable="true" id="customer-name" style="font-weight:bold;">V. BABJI</span>
+                </div>
+                 <div>
+                    <strong>CONTACT: </strong><br>
+                    <span contenteditable="true" id="customer-contact">Contact number / Email</span>
+                </div>
+                <div style="grid-column: span 2;">
+                    <strong>ADDRESS: </strong><br>
+                    <span contenteditable="true" id="customer-address">PALAKOLLU</span>
+                </div>
+                 <div>
+                    <strong>SYSTEM SIZE: </strong>
+                    <span contenteditable="true" id="system-size">3</span> KW ON-GRID
+                </div>
+                <div>
+                    <strong>QUOTATION VALIDITY: </strong>
+                    <span contenteditable="true" id="validity">15 Days</span>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">Sl.</th>
+                        <th style="width: 45%;">ITEM & DESCRIPTION</th>
+                        <th style="width: 10%;" class="align-center">QTY</th>
+                        <th style="width: 15%;" class="align-right">UNIT RATE (₹)</th>
+                        <th style="width: 25%;" class="align-right">AMOUNT (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="align-center">1</td>
+                        <td class="description-cell">
+                            <strong contenteditable="true" id="item1-title">3 KW ON-GRID ROOF-TOP SOLAR SYSTEM</strong><br>
+                            <span contenteditable="true" id="item1-details-1">CONTAINING 540-580 WP SOLAR PANELS AND</span><br>
+                            <span contenteditable="true" id="item1-details-2">GTI 3 KW INCLUDING WITH MOUNTING</span><br>
+                            <span contenteditable="true" id="item1-details-3">STRUCTURE INSTALLATION & LIASIONING</span>
+                        </td>
+                        <td class="align-center"><span contenteditable="true" id="item1-qty">1</span></td>
+                        <td class="align-right"><span contenteditable="true" id="item1-unit-rate">2,10,000.00</span></td>
+                        <td class="align-right"><span contenteditable="true" id="item1-amount">2,10,000.00</span></td>
+                    </tr>
+                     <tr class="total-row">
+                        <td colspan="4" class="align-right">TOTAL (Gross)</td>
+                        <td class="align-right">₹<span contenteditable="true" id="total-price">2,10,000.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+             <div class="notes-box">
+                 <p><strong contenteditable="true" id="calc-note-title">System Calculation Note:</strong></p>
+                <p>
+                    <span contenteditable="true" id="panel-wattage">540</span> WP * <span contenteditable="true" id="panel-qty">6</span> NO'S =
+                    <span contenteditable="true" id="total-wp" style="font-weight: bold;">3,240</span> Wp (DC Capacity)
+                </p>
+                <p contenteditable="true" id="calc-note-details" class="small-text">Note: Actual panel wattage may vary slightly based on availability (+/- 5Wp).</p>
+            </div>
+
+
+            <div class="highlight-grid">
+                <div class="highlight-box payment">
+                    <h3>Customer Payment:</h3>
+                    <p>Total Payment (Gross): <strong>₹ <span contenteditable="true" id="payment-gross">2,10,000.00</span></strong></p>
+                    <p>Subsidy from Govt. (Approx): <strong style="color: #c0392b;">₹ <span contenteditable="true" id="subsidy">78,000.00</span></strong></p>
+                    <p class="net-price">Net Payable by Customer: ₹ <span contenteditable="true" id="net-price">1,32,000.00</span></p>
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #bbf7d0;">
+                        <p style="font-weight: bold;">Payment Terms:</p>
+                        <p><span contenteditable="true" id="advance-payment">90</span>% Advance with Work Order.</p>
+                        <p><span contenteditable="true" id="after-installation">10</span>% After Installation & Commissioning.</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box bank">
+                    <h3>OUR BANK DETAILS:</h3>
+                    <p><strong>BANK NAME:</strong> <span contenteditable="true" id="bank-name">CANARA BANK</span></p>
+                    <p><strong>ACCOUNT NAME:</strong> <span contenteditable="true" id="acct-name">SRIYAVEDA SOLAR ENERGIES</span></p>
+                    <p><strong>ACCOUNT NUMBER:</strong> <span contenteditable="true" id="acct-number">120036638728</span></p>
+                    <p><strong>IFSC CODE:</strong> <span contenteditable="true" id="ifsc-code">CNRB0000660</span></p>
+                    <p><strong>BRANCH:</strong> <span contenteditable="true" id="bank-branch">ELURU</span></p>
+                </div>
+            </div>
+
+            <div class="signature-area">
+                <div class="signature-box">
+                    <div class="signature-uploads" style="min-height: 50px; margin-bottom: 5px;">
+                        <img id="signature-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Signature">
+                        <img id="stamp-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Stamp">
+                    </div>
+                    <p class="small-text" id="upload-label">Upload Signature / Stamp:</p>
+                    <input type="file" id="signature-upload" accept="image/*" style="display: block; margin: 2px auto; font-size: 10px;" onchange="uploadImage(this, 'signature-image')">
+                    <input type="file" id="stamp-upload" accept="image/*" style="display: block; margin: 2px auto; font-size: 10px;" onchange="uploadImage(this, 'stamp-image')">
+
+                    <div class="signature-line">
+                        <p style="font-weight: bold; margin: 0; color: #495057; font-size: 12px;">AUTHORISED SIGNATORY</p>
+                         <p contenteditable="true" id="signatory-name" style="font-size: 11px; margin-top: 2px;">[Signatory Name Here]</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; font-size: 9px; border-top: 1px solid #dee2e6; padding-top: 8px; margin-top: 20px; color: #6c757d;">
+                <p style="font-weight: bold; margin: 1px 0;" id="footer-company-name">SRIYAVEDA SOLAR ENERGIES</p>
+                <p style="margin: 1px 0;" id="footer-details">Cell: 9440788850 | F No-403, YALAKKAYA STREET, NEAR CLOCK TOWER, Eluru - 534001, Andhra Pradesh | GST: 37AEUPE97947G1ZU</p>
+                 <p style="margin: 1px 0;" contenteditable="true" id="footer-extra">Optional Extra Footer Line (e.g., Email or Website)</p>
+            </div>
+        </div><div class="page" id="page2">
+             <div class="content-section">
+                <h2 contenteditable="true" id="terms-title">Terms and Conditions</h2>
+                <ol>
+                    <li contenteditable="true" id="term1"><strong>Scope of Work:</strong> Supply, installation, testing, and commissioning of the solar power system as specified. Includes necessary structure, cabling, and standard safety devices.</li>
+                    <li contenteditable="true" id="term2"><strong>Exclusions:</strong> Any civil work not explicitly mentioned, reinforcement of existing roof structure if required, grid connectivity charges payable to DISCOM (if any beyond standard liasoning).</li>
+                    <li contenteditable="true" id="term3"><strong>Payment:</strong> As per the terms mentioned on Page 1. Late payments may attract interest at 1.5% per month.</li>
+                    <li contenteditable="true" id="term4"><strong>Taxes:</strong> All prices are inclusive of current GST rates. Any changes in tax structure will be applicable as per government regulations.</li>
+                     <li contenteditable="true" id="term5"><strong>Delivery & Installation Timeline:</strong> Estimated installation completion within <span contenteditable="true" id="timeline">4-6 weeks</span> from the date of receipt of advance payment and site readiness, subject to material availability and necessary approvals.</li>
+                     <li contenteditable="true" id="term6"><strong>Site Access:</strong> Customer shall provide clear and safe access to the site for personnel and materials during installation.</li>
+                     <li contenteditable="true" id="term7"><strong>Approvals & Liasoning:</strong> We will assist in obtaining necessary approvals from DISCOM/relevant authorities. Customer cooperation is required for documentation. Standard liasoning fees included; any additional/non-standard charges are extra.</li>
+                      <li contenteditable="true" id="term8"><strong>Force Majeure:</strong> Delays due to circumstances beyond our reasonable control (natural disasters, government restrictions, pandemics, etc.) shall extend the completion timeline.</li>
+                      <li contenteditable="true" id="term9"><strong>Title of Goods:</strong> Ownership of the supplied materials shall pass to the customer only upon receipt of full payment.</li>
+                      <li contenteditable="true" id="term10"><strong>Governing Law & Jurisdiction:</strong> This agreement shall be governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in <span contenteditable="true" id="jurisdiction">Eluru, Andhra Pradesh</span>.</li>
+                       <li contenteditable="true" id="term11"><strong>Acceptance:</strong> This quotation is valid for the period mentioned on Page 1. Acceptance implies agreement to all terms herein.</li>
+                       </ol>
+            </div>
+
+            <div class="content-section">
+                <h2 contenteditable="true" id="warranty-title">Warranty Information</h2>
+                 <p contenteditable="true" id="warranty-intro">The following warranties are provided by the respective manufacturers and are passed on to the customer:</p>
+                <ul>
+                    <li contenteditable="true" id="warranty-panels"><strong>Solar Panels:</strong> <span contenteditable="true" id="panel-perf-warranty">25 Years</span> Linear Performance Warranty (typically guaranteeing ~80% output) and <span contenteditable="true" id="panel-prod-warranty">10-12 Years</span> Product Warranty against manufacturing defects.</li>
+                    <li contenteditable="true" id="warranty-inverter"><strong>Inverter:</strong> <span contenteditable="true" id="inverter-warranty">5 Years</span> Standard Manufacturer's Warranty (extendable options may be available at extra cost).</li>
+                     <li contenteditable="true" id="warranty-structure"><strong>Mounting Structure:</strong> <span contenteditable="true" id="structure-warranty">5-10 Years</span> Warranty against manufacturing defects (depends on material - specify).</li>
+                     <li contenteditable="true" id="warranty-workmanship"><strong>Workmanship:</strong> <span contenteditable="true" id="workmanship-warranty">1 Year</span> Warranty on installation workmanship provided by SRIYAVEDA SOLAR ENERGIES.</li>
+                      <li contenteditable="true" id="warranty-details">Warranty claims are subject to the terms and conditions specified by the respective manufacturers. Detailed warranty documents will be provided upon project completion. Warranty does not cover damage due to external factors, misuse, or unauthorized modifications.</li>
+                </ul>
+            </div>
+        </div><div class="page" id="page3">
+            <div class="content-section">
+                <h2 contenteditable="true" id="specs-title">Detailed Specifications (Optional)</h2>
+                 <p contenteditable="true" id="specs-intro">Key component specifications (brands and models are indicative and subject to availability of equivalent or better quality):</p>
+                <ul>
+                    <li contenteditable="true" id="spec-panel-brand"><strong>Solar Panels Brand/Model:</strong> [e.g., Waaree / Adani / Vikram Solar - Specify Model Series if known]</li>
+                    <li contenteditable="true" id="spec-panel-type"><strong>Panel Type:</strong> [e.g., Monocrystalline PERC, Half-cut]</li>
+                    <li contenteditable="true" id="spec-inverter-brand"><strong>Inverter Brand/Model:</strong> [e.g., Growatt / Solis / Polycab - Specify Model]</li>
+                    <li contenteditable="true" id="spec-structure-material"><strong>Mounting Structure Material:</strong> [e.g., Galvanized Iron (GI) / Aluminium]</li>
+                     <li contenteditable="true" id="spec-cables"><strong>Cables & Connectors:</strong> Polycab / Havells or equivalent, MC4 compatible connectors.</li>
+                     <li contenteditable="true" id="spec-safety"><strong>Safety Devices:</strong> ACDB, DCDB with appropriate SPD and fuses/MCBs included.</li>
+                     <li contenteditable="true" id="spec-earthing"><strong>Earthing:</strong> Chemical earthing / Conventional GI earthing as per site requirement (Specify).</li>
+                      </ul>
+            </div>
+
+            <div class="content-section">
+                <h2 contenteditable="true" id="notes-title">Additional Notes / Remarks</h2>
+                <div contenteditable="true" id="notes-content">
+                    <p>Enter any specific notes, clarifications, or additional points relevant to this quotation here.</p>
+                    <ul>
+                        <li>Example: Roof condition assessment pending final site visit.</li>
+                        <li>Example: Generation estimate is based on standard test conditions and local solar irradiation data. Actual generation may vary.</li>
+                        <li>Example: Customer is responsible for ensuring roof load-bearing capacity.</li>
+                    </ul>
+                </div>
+            </div>
+
+             <div class="content-section">
+                 <h2 contenteditable="true" id="acceptance-title">Customer Acceptance</h2>
+                  <p contenteditable="true" id="acceptance-text">I/We hereby accept the terms and conditions outlined in this quotation and agree to proceed with the project.</p>
+                 <div style="margin-top: 50px; display: flex; justify-content: space-between; font-size: 13px;">
+                     <div style="width: 45%;">
+                         <div style="border-bottom: 1px solid #aaa; height: 30px;"></div>
+                         <p style="text-align: center; margin-top: 5px;"><strong>Customer Signature</strong></p>
+                     </div>
+                     <div style="width: 45%;">
+                         <div style="border-bottom: 1px solid #aaa; height: 30px;"></div>
+                         <p style="text-align: center; margin-top: 5px;"><strong>Date</strong></p>
+                     </div>
+                 </div>
+             </div>
+
+        </div></div><script>
+        const STORAGE_KEY = 'OFFLINE_QUOTATION_DATA_MULTI_PAGE_V2'; // Changed key for new version
+        let saveTimeout;
+        let isSaving = false;
+
+        // --- Status Update Function ---
+         function updateSaveStatus(status) {
+             const statusEl = document.getElementById('save-status');
+             if (!statusEl) return;
+
+             switch (status) {
+                 case 'typing':
+                     statusEl.innerText = "Typing...";
+                     statusEl.className = 'status-typing';
+                     break;
+                 case 'saving':
+                     // Optional: Indicate saving briefly if needed, but auto-save is fast
+                     // statusEl.innerText = "Saving...";
+                     // statusEl.className = 'status-saving';
+                     break;
+                 case 'saved':
+                     statusEl.innerText = "Auto-Saved!";
+                     statusEl.className = ''; // Default green color
+                     setTimeout(() => {
+                         if (statusEl.innerText === "Auto-Saved!") { // Avoid overriding "Save Failed!"
+                            statusEl.innerText = "Saved!";
+                         }
+                     }, 1500);
+                     break;
+                 case 'error':
+                     statusEl.innerText = "Save Failed!";
+                     statusEl.className = 'status-error';
+                     break;
+                 default:
+                     statusEl.innerText = "Saved!";
+                      statusEl.className = '';
+             }
+         }
+
+
+        // --- Save and Load Logic ---
+        function saveContent() {
+            if (isSaving) return;
+            isSaving = true;
+            // updateSaveStatus('saving'); // Optional saving indicator
+
+            const data = {};
+            // Select all contenteditable elements and relevant images
+            document.querySelectorAll('[contenteditable][id], img[id$="-image"]').forEach(el => {
+                if (el.tagName === 'IMG') {
+                    data[el.id] = el.src; // Save image src (Base64 or placeholder)
+                } else {
+                    data[el.id] = el.innerHTML; // Save text content
+                }
+            });
+
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                updateSaveStatus('saved');
+            } catch (e) {
+                console.error("Error saving to local storage:", e);
+                updateSaveStatus('error');
+                 // Consider more robust error handling / user notification if storage is full
+                 if (e.name === 'QuotaExceededError') {
+                     alert('Could not save data. Browser local storage might be full. Please clear some space or try a different browser.');
+                 }
+            } finally {
+                isSaving = false;
+            }
+        }
+
+       function loadContent() {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY);
+                const data = savedData ? JSON.parse(savedData) : {};
+
+                // Load text content from storage or keep default HTML
+                document.querySelectorAll('[contenteditable][id]').forEach(el => {
+                   // Ensure data exists for this ID before overwriting default HTML
+                   if (data[el.id] !== undefined) {
+                      el.innerHTML = data[el.id];
+                   }
+                   // Add min-height style dynamically if element is empty to prevent collapse during editing
+                   if (!el.textContent.trim() && !el.innerHTML.includes('<img')) {
+                        el.style.minHeight = '1em'; // Ensure empty elements are clickable
+                        el.style.display = 'inline-block'; // Needed for min-height
+                    } else {
+                         el.style.minHeight = ''; // Remove if content exists
+                     }
+                });
+
+                // Load image sources from storage or keep default/embedded HTML src
+                document.querySelectorAll('img[id$="-image"]').forEach(img => {
+                    // Use saved data if available, otherwise keep the src already in the HTML
+                    img.src = data[img.id] || img.src || 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // Fallback
+                });
+
+                 // Populate footer elements from header elements if footer is empty (on first load/clear)
+                 const companyName = document.getElementById('company-name').innerText;
+                 const footerCompanyName = document.getElementById('footer-company-name');
+                 const companyDetails = [
+                     document.getElementById('company-cell').innerText,
+                     document.getElementById('company-address1').innerText,
+                     document.getElementById('company-address2').innerText,
+                     document.getElementById('company-gst').innerText
+                 ].filter(Boolean).join(' | '); // Filter out empty and join
+                 const footerDetails = document.getElementById('footer-details');
+
+                 if (footerCompanyName && !footerCompanyName.innerText.trim() && companyName.trim()) {
+                     footerCompanyName.innerText = companyName;
+                 }
+                  if (footerDetails && !footerDetails.innerText.includes('|') && companyDetails.includes('|')) { // Basic check if details seem unset
+                     footerDetails.innerText = companyDetails;
+                 }
+
+
+            } catch (e) {
+                console.error("Error loading from local storage:", e);
+                updateSaveStatus('error');
+            }
+        }
+
+        // --- Image Handling ---
+        function uploadImage(input, targetId) {
+            const file = input.files[0];
+            if (file) {
+                 // Basic size check (e.g., limit to 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image file size should be less than 2MB.');
+                    input.value = ''; // Clear the input
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(targetId);
+                    img.src = e.target.result;
+                    // Trigger save immediately after image update
+                    clearTimeout(saveTimeout); // Clear any pending text save
+                    saveContent();
+                };
+                reader.onerror = () => {
+                     alert('Error reading image file.');
+                     updateSaveStatus('error');
+                 };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- Clear Data Function ---
+        function clearData() {
+            if (confirm("Are you sure you want to clear ALL saved quotation data from your browser? This cannot be undone. The page will reload with defaults.")) {
+                localStorage.removeItem(STORAGE_KEY);
+                alert("All saved data cleared. Reloading page.");
+                window.location.reload();
+            }
+        }
+
+        // --- Event Listeners and Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadContent(); // Load existing data or set defaults/embedded images
+
+            // Debounced save for text input
+            document.querySelectorAll('[contenteditable][id]').forEach(el => {
+                el.addEventListener('input', () => {
+                     updateSaveStatus('typing');
+                     clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(saveContent, 1200); // Save 1.2 seconds after last input
+
+                    // Handle min-height for empty elements during editing
+                     if (!el.textContent.trim() && !el.innerHTML.includes('<img')) {
+                        el.style.minHeight = '1em';
+                        el.style.display = 'inline-block';
+                    } else {
+                         el.style.minHeight = '';
+                     }
+                });
+            });
+
+            // Ensure initial state (including defaults or embedded images) is saved if nothing was loaded
+             if (!localStorage.getItem(STORAGE_KEY)) {
+                saveContent();
+            } else {
+                 updateSaveStatus('saved'); // Show saved status if loaded from storage
+             }
+        });
+
+        // Save before leaving
+        window.addEventListener('beforeunload', () => {
+             // Ensure any pending save is executed
+             clearTimeout(saveTimeout);
+             saveContent();
+        });
+
+    </script>
+</body>
+</html>
