@@ -14,7 +14,6 @@ const Footer = () => {
   const quickLinks = [
     'About Us',
     'Our Services',
-    'Calculator',
     'Get Quote',
     'Track Order',
     'Contact'
