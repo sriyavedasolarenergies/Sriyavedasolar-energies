@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FileText, Download, User, Phone, Mail, MapPin, Home, Zap, Settings, CheckCircle } from 'lucide-react';
+import ScrollAnimation from './ScrollAnimation';
 
 interface QuotationData {
   name: string;
@@ -72,7 +73,7 @@ const Quotation = () => {
 
   const generateQuotation = async () => {
     setIsGenerating(true);
-    
+
     // Simulate Google Forms submission
     const googleFormData = new FormData();
     googleFormData.append('entry.name', formData.name);
@@ -87,6 +88,12 @@ const Quotation = () => {
       setIsGenerating(false);
       setQuotationGenerated(true);
     }, 2000);
+  };
+
+  const downloadBrochure = () => {
+    // Open the two brochure images in new tabs
+    window.open('/ai-images/1.png', '_blank');
+    window.open('/ai-images/2.png', '_blank');
   };
 
   const downloadQuotation = () => {
@@ -123,7 +130,7 @@ const Quotation = () => {
             <p><strong>Email:</strong> ${quotationData.email}</p>
             <p><strong>Phone:</strong> ${quotationData.phone}</p>
             <p><strong>Address:</strong> ${quotationData.address}</p>
-            
+
             <h3>System Specification</h3>
             <table class="table">
               <tr><th>Component</th><th>Brand/Type</th><th>Specification</th><th>Cost</th></tr>
@@ -134,10 +141,10 @@ const Quotation = () => {
               <tr><td>Other Components</td><td>Mounting, Earthing</td><td>Complete kit</td><td>₹${(formData.systemSize * 5000).toLocaleString()}</td></tr>
               <tr class="total"><td colspan="3"><strong>Total System Cost</strong></td><td><strong>₹${quotationData.totalCost.toLocaleString()}</strong></td></tr>
             </table>
-            
+
             <p><strong>Quotation Date:</strong> ${quotationData.generatedDate}</p>
             <p><strong>Valid Until:</strong> ${quotationData.validUntil}</p>
-            
+
             <h3>Contact Information</h3>
             <p>SRIYAVEDA SOLAR ENERGIES<br>
             Phone: +91 9999999999<br>
@@ -159,239 +166,259 @@ const Quotation = () => {
   return (
     <section id="quotation" className="py-20 bg-gradient-to-b from-gray-900 to-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Get Your{' '}
-            <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
-              Custom Quotation
-            </span>
-          </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Customize your solar system with premium components and get an instant quotation
-          </p>
-        </div>
+        <ScrollAnimation direction="fade" delay={0.2}>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Get Your{' '}
+              <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
+                Custom Quotation
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Customize your solar system with premium components and get an instant quotation
+            </p>
+          </div>
+        </ScrollAnimation>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Form */}
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 border border-orange-500/20">
-            <div className="flex items-center mb-8">
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white">System Configuration</h3>
-            </div>
-
-            <div className="space-y-6">
-              {/* Personal Details */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-white font-semibold mb-2">
-                    <User className="inline h-4 w-4 mr-2" />
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                    placeholder="Enter your full name"
-                  />
+          <ScrollAnimation direction="left" delay={0.3}>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 border border-orange-500/20">
+              <div className="flex items-center mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center mr-4">
+                  <FileText className="h-6 w-6 text-white" />
                 </div>
-                <div>
-                  <label className="block text-white font-semibold mb-2">
-                    <Phone className="inline h-4 w-4 mr-2" />
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                    placeholder="+91 9999999999"
-                  />
-                </div>
+                <h3 className="text-2xl font-bold text-white">System Configuration</h3>
               </div>
 
-              <div>
-                <label className="block text-white font-semibold mb-2">
-                  <Mail className="inline h-4 w-4 mr-2" />
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                  placeholder="your.email@example.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-white font-semibold mb-2">
-                  <MapPin className="inline h-4 w-4 mr-2" />
-                  Installation Address
-                </label>
-                <textarea
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors h-24"
-                  placeholder="Enter complete address"
-                />
-              </div>
-
-              {/* System Configuration */}
-              <div>
-                <label className="block text-white font-semibold mb-3">
-                  <Zap className="inline h-4 w-4 mr-2" />
-                  System Size: {formData.systemSize} kW
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  step="1"
-                  value={formData.systemSize}
-                  onChange={(e) => setFormData({...formData, systemSize: Number(e.target.value)})}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
-                />
-              </div>
-
-              {/* Component Selection */}
-              <div className="grid md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-white font-semibold mb-2">Panel Brand</label>
-                  <select
-                    value={formData.panelBrand}
-                    onChange={(e) => setFormData({...formData, panelBrand: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                  >
-                    {panelBrands.map((brand) => (
-                      <option key={brand.value} value={brand.value}>
-                        {brand.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-white font-semibold mb-2">Inverter Brand</label>
-                  <select
-                    value={formData.inverterBrand}
-                    onChange={(e) => setFormData({...formData, inverterBrand: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                  >
-                    {inverterBrands.map((brand) => (
-                      <option key={brand.value} value={brand.value}>
-                        {brand.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-white font-semibold mb-2">Wiring Brand</label>
-                  <select
-                    value={formData.wiringBrand}
-                    onChange={(e) => setFormData({...formData, wiringBrand: e.target.value})}
-                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
-                  >
-                    {wiringBrands.map((brand) => (
-                      <option key={brand.value} value={brand.value}>
-                        {brand.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <button
-                onClick={generateQuotation}
-                disabled={isGenerating || !formData.name || !formData.email || !formData.phone}
-                className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-4 rounded-xl font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-              >
-                {isGenerating ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Generating Quotation...</span>
-                  </>
-                ) : (
-                  <>
-                    <Settings className="h-5 w-5" />
-                    <span>Generate Quotation</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Quotation Preview */}
-          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 border border-orange-500/20">
-            <div className="flex items-center mb-8">
-              <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-green-500 rounded-xl flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white">Quotation Preview</h3>
-            </div>
-
-            {quotationGenerated ? (
               <div className="space-y-6">
-                <div className="flex items-center text-green-400 mb-4">
-                  <CheckCircle className="h-6 w-6 mr-2" />
-                  <span className="font-semibold">Quotation Generated Successfully!</span>
+                {/* Personal Details */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-white font-semibold mb-2">
+                      <User className="inline h-4 w-4 mr-2" />
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white font-semibold mb-2">
+                      <Phone className="inline h-4 w-4 mr-2" />
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                      placeholder="+91 9999999999"
+                    />
+                  </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-500/30 rounded-2xl p-6">
-                  <h4 className="text-xl font-bold text-white mb-4">System Summary</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">System Size:</span>
-                      <span className="text-orange-400 font-semibold">{formData.systemSize} kW</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Solar Panels:</span>
-                      <span className="text-teal-400">{panelBrands.find(p => p.value === formData.panelBrand)?.label}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Inverter:</span>
-                      <span className="text-teal-400">{inverterBrands.find(i => i.value === formData.inverterBrand)?.label}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Wiring:</span>
-                      <span className="text-teal-400">{wiringBrands.find(w => w.value === formData.wiringBrand)?.label}</span>
-                    </div>
-                    <hr className="border-gray-600" />
-                    <div className="flex justify-between text-xl font-bold">
-                      <span className="text-white">Total Cost:</span>
-                      <span className="text-green-400">₹{calculateQuotation().toLocaleString()}</span>
-                    </div>
+                <div>
+                  <label className="block text-white font-semibold mb-2">
+                    <Mail className="inline h-4 w-4 mr-2" />
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-white font-semibold mb-2">
+                    <MapPin className="inline h-4 w-4 mr-2" />
+                    Installation Address
+                  </label>
+                  <textarea
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors h-24"
+                    placeholder="Enter complete address"
+                  />
+                </div>
+
+                {/* System Configuration */}
+                <div>
+                  <label className="block text-white font-semibold mb-3">
+                    <Zap className="inline h-4 w-4 mr-2" />
+                    System Size: {formData.systemSize} kW
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="50"
+                    step="1"
+                    value={formData.systemSize}
+                    onChange={(e) => setFormData({...formData, systemSize: Number(e.target.value)})}
+                    className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+                  />
+                </div>
+
+                {/* Component Selection */}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Panel Brand</label>
+                    <select
+                      value={formData.panelBrand}
+                      onChange={(e) => setFormData({...formData, panelBrand: e.target.value})}
+                      className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                    >
+                      {panelBrands.map((brand) => (
+                        <option key={brand.value} value={brand.value}>
+                          {brand.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Inverter Brand</label>
+                    <select
+                      value={formData.inverterBrand}
+                      onChange={(e) => setFormData({...formData, inverterBrand: e.target.value})}
+                      className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                    >
+                      {inverterBrands.map((brand) => (
+                        <option key={brand.value} value={brand.value}>
+                          {brand.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-white font-semibold mb-2">Wiring Brand</label>
+                    <select
+                      value={formData.wiringBrand}
+                      onChange={(e) => setFormData({...formData, wiringBrand: e.target.value})}
+                      className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 focus:border-orange-400 focus:outline-none transition-colors"
+                    >
+                      {wiringBrands.map((brand) => (
+                        <option key={brand.value} value={brand.value}>
+                          {brand.label}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
                 <button
-                  onClick={downloadQuotation}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                  onClick={generateQuotation}
+                  disabled={isGenerating || !formData.name || !formData.email || !formData.phone}
+                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-4 rounded-xl font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
                 >
-                  <Download className="h-5 w-5" />
-                  <span>Download Quotation</span>
+                  {isGenerating ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Generating Quotation...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Settings className="h-5 w-5" />
+                      <span>Generate Quotation</span>
+                    </>
+                  )}
                 </button>
+              </div>
+            </div>
+          </ScrollAnimation>
 
-                <div className="text-center text-gray-400 text-sm">
-                  <p>Quotation valid for 30 days from generation date</p>
-                  <p className="mt-2">Our team will contact you within 24 hours</p>
+          {/* Quotation Preview */}
+          <ScrollAnimation direction="right" delay={0.4}>
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 border border-orange-500/20">
+              <div className="flex items-center mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-green-500 rounded-xl flex items-center justify-center mr-4">
+                  <FileText className="h-6 w-6 text-white" />
                 </div>
+                <h3 className="text-2xl font-bold text-white">Quotation Preview</h3>
               </div>
-            ) : (
-              <div className="text-center py-20">
-                <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-                <p className="text-gray-400 text-lg">
-                  Fill out the form to generate your custom quotation
-                </p>
-                <div className="mt-6 text-gray-500">
-                  <p>Estimated Cost: ₹{calculateQuotation().toLocaleString()}</p>
+
+              {quotationGenerated ? (
+                <div className="space-y-6">
+                  <div className="flex items-center text-green-400 mb-4">
+                    <CheckCircle className="h-6 w-6 mr-2" />
+                    <span className="font-semibold">Quotation Generated Successfully!</span>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-orange-500/10 to-yellow-500/10 border border-orange-500/30 rounded-2xl p-6">
+                    <h4 className="text-xl font-bold text-white mb-4">System Summary</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">System Size:</span>
+                        <span className="text-orange-400 font-semibold">{formData.systemSize} kW</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">Solar Panels:</span>
+                        <span className="text-teal-400">{panelBrands.find(p => p.value === formData.panelBrand)?.label}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">Inverter:</span>
+                        <span className="text-teal-400">{inverterBrands.find(i => i.value === formData.inverterBrand)?.label}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-300">Wiring:</span>
+                        <span className="text-teal-400">{wiringBrands.find(w => w.value === formData.wiringBrand)?.label}</span>
+                      </div>
+                      <hr className="border-gray-600" />
+                      <div className="flex justify-between text-xl font-bold">
+                        <span className="text-white">Total Cost:</span>
+                        <span className="text-green-400">₹{calculateQuotation().toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={downloadBrochure}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:from-green-600 hover:to-emerald-600 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                  >
+                    <Download className="h-5 w-5" />
+                    <span>Download Brochure</span>
+                  </button>
+
+                  <div className="text-center text-gray-400 text-sm">
+                    <p>Quotation valid for 30 days from generation date</p>
+                    <p className="mt-2">Our team will contact you within 24 hours</p>
+                  </div>
+
+                  <div className="text-center mt-8">
+                    <button
+                      onClick={() => {
+                        const element = document.getElementById('partner-registration');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
+                      className="bg-[#FF6600] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#e55a00] transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    >
+                      Become Our Channel Partner
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="text-center py-20">
+                  <FileText className="h-16 w-16 text-gray-500 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">
+                    Fill out the form to generate your custom quotation
+                  </p>
+                  <div className="mt-6 text-gray-500">
+                    <p>Estimated Cost: ₹{calculateQuotation().toLocaleString()}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollAnimation>
         </div>
       </div>
     </section>

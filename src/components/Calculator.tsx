@@ -14,18 +14,19 @@ interface CalculationResult {
 const Calculator = () => {
   const [monthlyBill, setMonthlyBill] = useState<number>(3000);
   const [roofArea, setRoofArea] = useState<number>(500);
-  const [location, setLocation] = useState<string>('bangalore');
+  const [location, setLocation] = useState<string>('Palakollu');
   const [systemType, setSystemType] = useState<string>('grid-tie');
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState<boolean>(false);
 
   const locations = [
-    { value: 'bangalore', label: 'Bangalore', sunHours: 5.2 },
-    { value: 'mumbai', label: 'Mumbai', sunHours: 5.5 },
-    { value: 'delhi', label: 'Delhi', sunHours: 5.1 },
-    { value: 'chennai', label: 'Chennai', sunHours: 5.8 },
-    { value: 'hyderabad', label: 'Hyderabad', sunHours: 5.3 },
-    { value: 'pune', label: 'Pune', sunHours: 5.4 }
+    { value: 'Palakollu', label: 'Palakollu', sunHours: 5.2 },
+    { value: 'Mogalathuru', label: 'Mogalathuru', sunHours: 5.5 },
+    { value: 'Bhimavaram', label: 'Bhimavaram', sunHours: 5.1 },
+    { value: 'Gokavaram', label: 'Gokavaram', sunHours: 5.8 },
+    { value: 'Kakinada', label: 'Kakinada', sunHours: 5.3 },
+    { value: 'Tenali', label: 'Tenali', sunHours: 5.4 },
+    { value: 'Jangareddygudem', label: 'Jangareddygudem', sunHours: 5.3 },
   ];
 
   const systemTypes = [
@@ -36,11 +37,11 @@ const Calculator = () => {
 
   const calculateSystem = () => {
     setIsCalculating(true);
-    
+
     setTimeout(() => {
       const selectedLocation = locations.find(loc => loc.value === location);
       const selectedSystem = systemTypes.find(sys => sys.value === systemType);
-      
+
       if (!selectedLocation || !selectedSystem) return;
 
       // Solar calculations
@@ -49,7 +50,7 @@ const Calculator = () => {
       const systemSize = Math.ceil((dailyUnits / selectedLocation.sunHours) * 1.2); // 20% buffer
       const maxSystemSize = Math.floor(roofArea / 100); // 100 sq ft per kW
       const finalSystemSize = Math.min(systemSize, maxSystemSize);
-      
+
       const costPerKW = systemType === 'grid-tie' ? 65000 : systemType === 'hybrid' ? 85000 : 105000;
       const totalCost = finalSystemSize * costPerKW;
       const generatedUnits = finalSystemSize * selectedLocation.sunHours * 30;
@@ -79,6 +80,11 @@ const Calculator = () => {
       return () => clearTimeout(timer);
     }
   }, [monthlyBill, roofArea, location, systemType]);
+
+  // Initial calculation on component mount
+  useEffect(() => {
+    calculateSystem();
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -275,7 +281,8 @@ const Calculator = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .slider::-webkit-slider-thumb {
           appearance: none;
           width: 24px;
@@ -294,7 +301,7 @@ const Calculator = () => {
           border: none;
           box-shadow: 0 0 20px rgba(249, 115, 22, 0.5);
         }
-      `}</style>
+      `}} />
     </section>
   );
 };

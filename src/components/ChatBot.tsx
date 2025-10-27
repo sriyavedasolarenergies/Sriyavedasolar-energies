@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Zap, Calculator, FileText, Users } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Zap, Calculator, FileText, Users, Hand } from 'lucide-react';
+import AnimatedRobot from './AnimatedRobot';
 
 interface Message {
   id: string;
@@ -32,7 +33,15 @@ const ChatBot = () => {
     isCollected: false
   });
   const [collectingInfo, setCollectingInfo] = useState<'name' | 'phone' | 'complete'>('name');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const robotImages = [
+    'animated-robot',
+    '/robot-images/robot-hi.svg',
+    '/robot-images/robot-solar.svg',
+    '/robot-images/robot-wave.svg'
+  ];
 
   const quickQuestions = [
     { icon: Calculator, text: 'Calculate solar savings', action: 'calculator' },
@@ -56,6 +65,16 @@ const ChatBot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-rotate robot images
+  useEffect(() => {
+    if (isOpen) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex(prev => (prev + 1) % robotImages.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [isOpen, robotImages.length]);
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -108,7 +127,7 @@ const ChatBot = () => {
     }
 
     const text = userText.toLowerCase();
-    
+
     if (text.includes('calculator') || text.includes('savings') || text.includes('calculate')) {
       return botResponses.calculator;
     } else if (text.includes('quotation') || text.includes('quote') || text.includes('price')) {
@@ -147,7 +166,25 @@ const ChatBot = () => {
           {isOpen ? (
             <X className="h-6 w-6 transition-transform duration-300" />
           ) : (
-            <MessageCircle className="h-6 w-6 group-hover:animate-pulse" />
+            <div className="relative w-full h-full">
+              {robotImages[currentImageIndex] === 'animated-robot' ? (
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <AnimatedRobot size={64} />
+                </div>
+              ) : (
+                <img
+                  src={robotImages[currentImageIndex]}
+                  alt="Solar Robot Assistant"
+                  className="w-full h-full object-cover rounded-full transition-all duration-500"
+                  onError={(e) => {
+                    // Fallback to icon if image fails to load
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              )}
+              <MessageCircle className="h-6 w-6 absolute inset-0 m-auto hidden group-hover:animate-pulse" />
+            </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full blur-xl opacity-30 group-hover:opacity-60 transition-opacity"></div>
         </button>
@@ -158,8 +195,24 @@ const ChatBot = () => {
         <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-gradient-to-br from-gray-900 to-black rounded-2xl shadow-2xl border border-orange-500/20 z-50 flex flex-col animate-in slide-in-from-bottom-5 duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-orange-500 to-yellow-500 p-4 rounded-t-2xl flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Bot className="h-6 w-6 text-white animate-pulse" />
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+              {robotImages[currentImageIndex] === 'animated-robot' ? (
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <AnimatedRobot size={40} />
+                </div>
+              ) : (
+                <img
+                  src={robotImages[currentImageIndex]}
+                  alt="Solar Robot Assistant"
+                  className="w-full h-full object-cover transition-all duration-500"
+                  onError={(e) => {
+                    // Fallback to bot icon if image fails to load
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+              )}
+              <Bot className="h-6 w-6 text-white animate-pulse hidden" />
             </div>
             <div>
               <h3 className="text-white font-semibold">Solar Assistant</h3>
@@ -175,16 +228,32 @@ const ChatBot = () => {
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}
               >
                 <div className={`flex items-start space-x-2 max-w-[80%] ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.sender === 'user' 
-                      ? 'bg-gradient-to-r from-teal-500 to-blue-500' 
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                    message.sender === 'user'
+                      ? 'bg-gradient-to-r from-teal-500 to-blue-500'
                       : 'bg-gradient-to-r from-orange-500 to-yellow-500'
                   }`}>
                     {message.sender === 'user' ? (
                       <User className="h-4 w-4 text-white" />
                     ) : (
-                      <Bot className="h-4 w-4 text-white" />
+                      robotImages[currentImageIndex] === 'animated-robot' ? (
+                        <div className="w-full h-full rounded-full overflow-hidden">
+                          <AnimatedRobot size={32} />
+                        </div>
+                      ) : (
+                        <img
+                          src={robotImages[currentImageIndex]}
+                          alt="Solar Robot Assistant"
+                          className="w-full h-full object-cover transition-all duration-500"
+                          onError={(e) => {
+                            // Fallback to bot icon if image fails to load
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                      )
                     )}
+                    <Bot className="h-4 w-4 text-white hidden" />
                   </div>
                   <div className={`p-3 rounded-2xl ${
                     message.sender === 'user'
@@ -203,8 +272,24 @@ const ChatBot = () => {
             {isTyping && (
               <div className="flex justify-start animate-in slide-in-from-bottom-2 duration-300">
                 <div className="flex items-start space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-white" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-yellow-500 flex items-center justify-center overflow-hidden">
+                    {robotImages[currentImageIndex] === 'animated-robot' ? (
+                      <div className="w-full h-full rounded-full overflow-hidden">
+                        <AnimatedRobot size={32} />
+                      </div>
+                    ) : (
+                      <img
+                        src={robotImages[currentImageIndex]}
+                        alt="Solar Robot Assistant"
+                        className="w-full h-full object-cover transition-all duration-500"
+                        onError={(e) => {
+                          // Fallback to bot icon if image fails to load
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    )}
+                    <Bot className="h-4 w-4 text-white hidden animate-pulse" />
                   </div>
                   <div className="bg-gray-800 p-3 rounded-2xl border border-gray-700">
                     <div className="flex space-x-1">
@@ -247,9 +332,9 @@ const ChatBot = () => {
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(inputText)}
                 placeholder={
-                  !userInfo.isCollected 
-                    ? collectingInfo === 'name' 
-                      ? "Enter your name..." 
+                  !userInfo.isCollected
+                    ? collectingInfo === 'name'
+                      ? "Enter your name..."
                       : "Enter your phone number..."
                     : "Type your message..."
                 }

@@ -1,0 +1,291 @@
+/* Animated Robot CSS - 5 Second Loop Animation */
+
+.robot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+
+.robot-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Ambient background glow animation */
+.ambient-glow {
+  animation: ambientPulse 5s ease-in-out infinite;
+}
+
+@keyframes ambientPulse {
+  0%, 100% { opacity: 0.1; r: 80; }
+  25% { opacity: 0.3; r: 90; }
+  50% { opacity: 0.2; r: 85; }
+  75% { opacity: 0.4; r: 95; }
+}
+
+/* Robot body floating motion */
+.robot-body {
+  animation: gentleFloat 5s ease-in-out infinite;
+}
+
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px); }
+  25% { transform: translateY(-2px); }
+  50% { transform: translateY(0px); }
+  75% { transform: translateY(-1px); }
+}
+
+/* Head turning animation */
+.robot-head {
+  transform-origin: center bottom;
+  animation: headTurn 5s ease-in-out infinite;
+}
+
+@keyframes headTurn {
+  0%, 20% { transform: rotate(0deg); }
+  25%, 45% { transform: rotate(-8deg); }
+  50%, 70% { transform: rotate(0deg); }
+  75%, 95% { transform: rotate(8deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Eye blinking and glowing */
+.robot-eye {
+  animation: eyeBlink 5s ease-in-out infinite;
+}
+
+@keyframes eyeBlink {
+  0%, 15%, 85%, 100% { r: 4; opacity: 1; }
+  16%, 84% { r: 1; opacity: 0.7; }
+}
+
+.eye-glow {
+  animation: eyeGlowPulse 5s ease-in-out infinite;
+}
+
+@keyframes eyeGlowPulse {
+  0%, 100% { opacity: 0.4; r: 6; }
+  25%, 75% { opacity: 0.8; r: 10; }
+  50% { opacity: 0.6; r: 8; }
+}
+
+/* Mouth smiling animation */
+.robot-mouth {
+  animation: smileAnimation 5s ease-in-out infinite;
+}
+
+@keyframes smileAnimation {
+  0%, 20% { d: path('M 85 90 Q 100 95 115 90'); }
+  25%, 45% { d: path('M 83 92 Q 100 98 117 92'); }
+  50%, 70% { d: path('M 85 90 Q 100 95 115 90'); }
+  75%, 95% { d: path('M 87 88 Q 100 92 113 88'); }
+  100% { d: path('M 85 90 Q 100 95 115 90'); }
+}
+
+/* Antenna light pulsing */
+.antenna-light {
+  animation: antennaPulse 5s ease-in-out infinite;
+}
+
+@keyframes antennaPulse {
+  0%, 100% { fill: #00ff99; opacity: 1; }
+  25%, 75% { fill: #00aaff; opacity: 0.8; }
+  50% { fill: #ffff00; opacity: 1; }
+}
+
+/* Arm waving animation */
+.left-arm, .right-arm {
+  animation: armWave 5s ease-in-out infinite;
+}
+
+@keyframes armWave {
+  0%, 20% { transform: rotate(0deg); }
+  25%, 45% { transform: rotate(15deg); }
+  50%, 70% { transform: rotate(0deg); }
+  75%, 95% { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.left-hand {
+  transform-origin: center center;
+  animation: leftHandWave 5s ease-in-out infinite;
+}
+
+@keyframes leftHandWave {
+  0%, 20% { transform: rotate(0deg); }
+  25%, 45% { transform: rotate(25deg); }
+  50%, 70% { transform: rotate(0deg); }
+  75%, 95% { transform: rotate(-15deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.right-hand {
+  transform-origin: center center;
+  animation: rightHandWave 5s ease-in-out infinite;
+}
+
+@keyframes rightHandWave {
+  0%, 20% { transform: rotate(0deg); }
+  25%, 45% { transform: rotate(-25deg); }
+  50%, 70% { transform: rotate(0deg); }
+  75%, 95% { transform: rotate(15deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Accent lights pulsing */
+.accent-light {
+  animation: accentPulse 5s ease-in-out infinite;
+}
+
+@keyframes accentPulse {
+  0%, 100% { opacity: 0.7; r: 3; }
+  25%, 75% { opacity: 1; r: 4; }
+  50% { opacity: 0.9; r: 3.5; }
+}
+
+.chest-light {
+  animation: chestPulse 5s ease-in-out infinite;
+}
+
+@keyframes chestPulse {
+  0%, 100% { opacity: 0.6; r: 4; fill: #00aaff; }
+  25%, 75% { opacity: 1; r: 5; fill: #00ff99; }
+  50% { opacity: 0.8; r: 4.5; fill: #00aaff; }
+}
+
+/* Leg subtle movement */
+.leg {
+  animation: legSway 5s ease-in-out infinite;
+}
+
+@keyframes legSway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+/* Solar panel appearance and glow */
+.solar-panel {
+  animation: panelAppear 5s ease-in-out infinite;
+}
+
+@keyframes panelAppear {
+  0%, 20% { opacity: 0; transform: scale(0.8); }
+  25%, 45% { opacity: 1; transform: scale(1); }
+  50%, 70% { opacity: 1; transform: scale(1); }
+  75%, 95% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 0; transform: scale(0.8); }
+}
+
+/* Solar cells pulsing */
+.solar-cell {
+  animation: cellPulse 5s ease-in-out infinite;
+}
+
+.cell-1 { animation-delay: 0s; }
+.cell-2 { animation-delay: 0.2s; }
+.cell-3 { animation-delay: 0.4s; }
+.cell-4 { animation-delay: 0.6s; }
+.cell-5 { animation-delay: 0.8s; }
+.cell-6 { animation-delay: 1s; }
+
+@keyframes cellPulse {
+  0%, 20% { opacity: 0.7; }
+  25%, 45% { opacity: 1; }
+  50%, 70% { opacity: 1; }
+  75%, 95% { opacity: 0.8; }
+  100% { opacity: 0.7; }
+}
+
+/* Sun rays animation */
+.sun-rays {
+  animation: raysGlow 5s ease-in-out infinite;
+}
+
+@keyframes raysGlow {
+  0%, 20% { opacity: 0; }
+  25%, 45% { opacity: 1; }
+  50%, 70% { opacity: 1; }
+  75%, 95% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.ray-1 { animation-delay: 0s; }
+.ray-2 { animation-delay: 0.3s; }
+.ray-3 { animation-delay: 0.6s; }
+
+/* Floating particles */
+.floating-particles {
+  animation: particlesFloat 5s ease-in-out infinite;
+}
+
+@keyframes particlesFloat {
+  0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.5; }
+  25% { transform: translateY(-10px) translateX(5px); opacity: 0.8; }
+  50% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
+  75% { transform: translateY(-5px) translateX(-3px); opacity: 0.9; }
+}
+
+.particle-1 {
+  animation: particle1Move 8s ease-in-out infinite;
+}
+
+@keyframes particle1Move {
+  0%, 100% { cx: 50; cy: 50; opacity: 0.6; }
+  25% { cx: 60; cy: 40; opacity: 0.8; }
+  50% { cx: 70; cy: 50; opacity: 0.7; }
+  75% { cx: 60; cy: 60; opacity: 0.9; }
+}
+
+.particle-2 {
+  animation: particle2Move 6s ease-in-out infinite;
+}
+
+@keyframes particle2Move {
+  0%, 100% { cx: 150; cy: 30; opacity: 0.5; }
+  25% { cx: 160; cy: 20; opacity: 0.7; }
+  50% { cx: 170; cy: 30; opacity: 0.6; }
+  75% { cx: 160; cy: 40; opacity: 0.8; }
+}
+
+.particle-3 {
+  animation: particle3Move 7s ease-in-out infinite;
+}
+
+@keyframes particle3Move {
+  0%, 100% { cx: 30; cy: 120; opacity: 0.7; }
+  25% { cx: 20; cy: 110; opacity: 0.9; }
+  50% { cx: 30; cy: 100; opacity: 0.8; }
+  75% { cx: 40; cy: 110; opacity: 1; }
+}
+
+.particle-4 {
+  animation: particle4Move 9s ease-in-out infinite;
+}
+
+@keyframes particle4Move {
+  0%, 100% { cx: 170; cy: 150; opacity: 0.4; }
+  25% { cx: 180; cy: 140; opacity: 0.6; }
+  50% { cx: 170; cy: 130; opacity: 0.5; }
+  75% { cx: 160; cy: 140; opacity: 0.7; }
+}
+
+/* Responsive scaling */
+@media (max-width: 768px) {
+  .robot-container {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .robot-container {
+    width: 120px;
+    height: 120px;
+  }
+}

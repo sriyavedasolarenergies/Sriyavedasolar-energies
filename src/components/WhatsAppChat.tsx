@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MessageCircle, Phone, X } from 'lucide-react';
 
@@ -5,7 +6,7 @@ const WhatsAppChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  const whatsappNumber = '+919999999999'; // Replace with actual WhatsApp number
+  const whatsappNumber = '+919440788850'; // Replace with actual WhatsApp number
   
   const predefinedMessages = [
     'Hi! I want to know more about solar installation.',

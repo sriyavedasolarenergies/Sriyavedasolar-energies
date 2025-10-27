@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/partners/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/partners/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function isPartner() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/partners/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/partners/$(request.auth.uid)).data.role == 'partner';
+    }
+    
+    // Partner collection
+    match /partners/{partnerId} {
+      // Partners can read their own document
+      // Admins can read and write all partner documents
+      allow read: if isAuthenticated() && (request.auth.uid == partnerId || isAdmin());
+      allow write: if isAdmin();
+      
+      // Submissions subcollection
+      match /submissions/{submissionId} {
+        // Partners can read and write their own submissions
+        // Admins can read and write all submissions
+        allow read, write: if isAuthenticated() && 
+          (request.auth.uid == partnerId || isAdmin());
+      }
+    }
+  }
+}

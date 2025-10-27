@@ -21,12 +21,14 @@ const Footer = () => {
   ];
 
   const locations = [
-    'Bangalore',
-    'Mumbai', 
-    'Delhi',
-    'Chennai',
-    'Hyderabad',
-    'Pune'
+    'Palakollu',
+    'Narasapuram', 
+    'Mogalathuru',
+    'Bhimavaram',
+    'Gokavaram',
+    'Kakinada',
+    'Tenali',
+    'Jangareddygudem',
   ];
 
   return (
@@ -60,7 +62,7 @@ const Footer = () => {
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold">+91 9999999999</p>
+                  <p className="font-semibold">+91 9440788850</p>
                   <p className="text-sm text-gray-400">24/7 Customer Support</p>
                 </div>
               </div>
@@ -70,7 +72,7 @@ const Footer = () => {
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold">info@sriyavedasolar.com</p>
+                  <p className="font-semibold">@sriyavedasolarenergies.com</p>
                   <p className="text-sm text-gray-400">Get Free Consultation</p>
                 </div>
               </div>
@@ -80,7 +82,7 @@ const Footer = () => {
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold">Bangalore, Karnataka</p>
+                  <p className="font-semibold">Eluru, Andhra Pradesh</p>
                   <p className="text-sm text-gray-400">Headquarters</p>
                 </div>
               </div>
