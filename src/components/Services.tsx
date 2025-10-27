@@ -149,12 +149,12 @@ const Services = () => {
             
             {/* Scrolling Container */}
             <div className="relative overflow-hidden bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-2xl p-6">
-              <div className="flex animate-scroll-right-to-left gap-6">
+              <div className="flex gap-6 md:animate-scroll-right-to-left">
                 {/* First set of images */}
                 {images.map((image, index) => (
                   <div
                     key={`first-${index}`}
-                    className="flex-shrink-0 w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
+                    className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
                     onClick={() => openImageModal(index)}
                   >
                     <img
@@ -180,7 +180,7 @@ const Services = () => {
                 {images.map((image, index) => (
                   <div
                     key={`second-${index}`}
-                    className="flex-shrink-0 w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
+                    className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
                     onClick={() => openImageModal(index)}
                   >
                     <img
@@ -305,13 +305,19 @@ const Services = () => {
             transform: translateX(-50%);
           }
         }
-        
+
         .animate-scroll-right-to-left {
           animation: scroll-right-to-left 40s linear infinite;
         }
-        
+
         .animate-scroll-right-to-left:hover {
           animation-play-state: paused;
+        }
+
+        @media (max-width: 768px) {
+          .animate-scroll-right-to-left {
+            animation: none !important;
+          }
         }
       `}</style>
     </section>
