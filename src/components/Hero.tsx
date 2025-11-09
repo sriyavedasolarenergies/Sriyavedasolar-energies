@@ -76,7 +76,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-8 sm:py-12 lg:py-16">
         <div className={`transition-all duration-1000 ${animationActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           {/* Main Logo Area */}
           <div className="mb-8">
@@ -97,20 +97,20 @@ const Hero = () => {
           </div>
 
           {/* Tagline */}
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight px-4 sm:px-6 lg:px-8">
             Power Your Future with
             <span className="bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
               {' '}Clean Energy
             </span>
           </h2>
-          
-          <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Transform your home or business with premium solar installations. 
+
+          <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed px-4 sm:px-6 lg:px-8">
+            Transform your home or business with premium solar installations.
             Save money, reduce carbon footprint, and join the renewable energy revolution.
           </p>
 
           {/* Feature Icons */}
-          <div className="flex justify-center space-x-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-12 px-4 sm:px-6 lg:px-8">
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -120,10 +120,10 @@ const Hero = () => {
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <div className="relative">
-                  <feature.icon className={`h-8 w-8 ${feature.color} group-hover:animate-bounce transition-all duration-300`} />
+                  <feature.icon className={`h-8 w-8 sm:h-10 sm:w-10 ${feature.color} group-hover:animate-bounce transition-all duration-300`} />
                   <div className={`absolute inset-0 bg-current rounded-full blur-lg opacity-0 group-hover:opacity-30 transition-opacity`}></div>
                 </div>
-                <span className="text-sm text-gray-400 mt-2 group-hover:text-white transition-colors">
+                <span className="text-xs sm:text-sm text-gray-400 mt-2 group-hover:text-white transition-colors text-center">
                   {feature.text}
                 </span>
               </div>
@@ -131,29 +131,29 @@ const Hero = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-            <button className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-4 rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/30 flex items-center space-x-2">
-              <span className="font-semibold">Get Free Quote</span>
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+          <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 md:space-x-6 px-4 sm:px-6 lg:px-8">
+            <button className="group bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 sm:px-8 py-4 rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/30 flex items-center justify-center space-x-2 min-h-[44px] w-full sm:w-auto">
+              <span className="font-semibold text-sm sm:text-base">Get Free Quote</span>
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />
               <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 -z-10"></div>
             </button>
-            
-            <button 
+
+            <button
               onClick={() => setShowMapModal(true)}
-              className="group bg-[#FF6600] text-white px-8 py-4 rounded-full hover:bg-[#E55A00] transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#FF6600]/30"
+              className="group bg-[#FF6600] text-white px-6 sm:px-8 py-4 rounded-full hover:bg-[#E55A00] transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#FF6600]/30 min-h-[44px] w-full sm:w-auto"
             >
-              <span className="font-semibold">Our Channel Partners</span>
+              <span className="font-semibold text-sm sm:text-base">Our Channel Partners</span>
               <div className="absolute inset-0 bg-white/20 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 -z-10"></div>
             </button>
-            
-            <button className="group border-2 border-teal-400 text-teal-400 px-8 py-4 rounded-full hover:bg-teal-400 hover:text-black transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-teal-400/30">
-              <span className="font-semibold">Learn More</span>
+
+            <button className="group border-2 border-teal-400 text-teal-400 px-6 sm:px-8 py-4 rounded-full hover:bg-teal-400 hover:text-black transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-teal-400/30 min-h-[44px] w-full sm:w-auto">
+              <span className="font-semibold text-sm sm:text-base">Learn More</span>
               <div className="absolute inset-0 bg-teal-400/10 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 -z-10"></div>
             </button>
           </div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="mt-12 sm:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 text-center px-4 sm:px-6 lg:px-8">
             {[
               { number: '500+', label: 'Installations' },
               { number: '98%', label: 'Satisfaction' },
@@ -162,12 +162,12 @@ const Hero = () => {
             ].map((stat, index) => (
               <div
                 key={index}
-                className="group cursor-pointer hover:scale-105 transition-all duration-300"
+                className="group cursor-pointer hover:scale-105 transition-all duration-300 p-2 sm:p-4"
               >
-                <div className="text-2xl md:text-3xl font-bold text-orange-400 group-hover:text-orange-300">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-orange-400 group-hover:text-orange-300">
                   {stat.number}
                 </div>
-                <div className="text-gray-400 group-hover:text-white transition-colors">
+                <div className="text-xs sm:text-sm md:text-base text-gray-400 group-hover:text-white transition-colors">
                   {stat.label}
                 </div>
               </div>

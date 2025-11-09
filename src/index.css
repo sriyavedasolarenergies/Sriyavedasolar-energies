@@ -93,23 +93,56 @@ html {
     bottom: 1rem;
     right: 1rem;
   }
-  
+
   .fixed.bottom-6.left-6 {
     bottom: 1rem;
     left: 1rem;
   }
-  
+
   .fixed.bottom-24.right-6 {
     bottom: 5rem;
     right: 1rem;
     width: calc(100vw - 2rem);
     max-width: 350px;
   }
-  
+
   .fixed.bottom-24.left-6 {
     bottom: 5rem;
     left: 1rem;
     width: calc(100vw - 2rem);
     max-width: 320px;
+  }
+}
+
+/* Additional responsive improvements */
+@media (max-width: 768px) {
+  /* Prevent horizontal overflow */
+  body, html {
+    overflow-x: hidden;
+  }
+
+  /* Ensure proper touch targets */
+  button, a, input, textarea, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve readability on small screens */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
+  }
+
+  /* Better spacing for mobile */
+  .container, .max-w-7xl {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop optimizations */
+  .container, .max-w-7xl {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
