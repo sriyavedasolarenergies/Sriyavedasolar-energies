@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Zap, Calculator, FileText, Users, Hand } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Zap, Calculator, FileText, Users } from 'lucide-react';
 import AnimatedRobot from './AnimatedRobot';
 
 interface Message {
@@ -87,6 +87,29 @@ const ChatBot = () => {
       } else if (collectingInfo === 'phone') {
         setUserInfo(prev => ({ ...prev, phone: text, isCollected: true }));
         setCollectingInfo('complete');
+
+        // Submit collected user info to ChatBot Google Form
+        const formDataToSend = new URLSearchParams();
+        formDataToSend.append('entry.1968338256', userInfo.name); // Name
+        formDataToSend.append('entry.866937775', text); // Phone
+
+        try {
+          console.log('Submitting chatbot user info to Google Forms...');
+          console.log('Form data being sent:', Object.fromEntries(formDataToSend));
+
+          await fetch('https://docs.google.com/forms/d/e/1FAIpQLScZCKIoM1-CXih2r0BsRcXPXSSuMY3aLUuiaGFwny-HedL27Q/formResponse', {
+            method: 'POST',
+            body: formDataToSend,
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          });
+
+          console.log('ChatBot user info submission request sent');
+        } catch (error) {
+          console.error('ChatBot form submission error:', error);
+        }
       }
     }
 

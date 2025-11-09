@@ -104,7 +104,7 @@ const ChannelPartnersCities: React.FC = () => {
 
         {/* Cities Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {cities.map((city, index) => (
+          {cities.map((city) => (
             <div
               key={city.name}
               id={`city-${city.name.toLowerCase()}`}
