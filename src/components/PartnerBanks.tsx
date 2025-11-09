@@ -66,22 +66,24 @@ const PartnerBanks = () => {
         </ScrollAnimation>
 
         <ScrollAnimation direction="up" delay={0.3}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-12">
             {banks.map((bank, index) => (
               <ScrollAnimation key={index} direction="up" delay={0.4 + index * 0.1}>
-                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border border-gray-700 hover:border-orange-500/50 transition-all duration-300 hover:scale-105 group cursor-pointer flex flex-col items-center justify-center min-h-[160px]">
-                  <div className="relative mb-4">
+                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-4 sm:p-6 border border-gray-700 hover:border-orange-500/50 transition-all duration-300 hover:scale-105 group cursor-pointer flex flex-col items-center justify-center min-h-[140px] sm:min-h-[160px]">
+                  <div className="relative mb-3 sm:mb-4">
                     <img
                       src={bank.logo}
                       alt={bank.alt}
-                      className="h-16 w-auto object-contain filter brightness-0 invert group-hover:brightness-100 group-hover:invert-0 transition-all duration-300"
+                      className="h-12 w-auto sm:h-16 object-contain filter brightness-0 invert group-hover:brightness-100 group-hover:invert-0 transition-all duration-300"
+                      loading="lazy"
                       onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/64x64?text=' + bank.name;
+                        e.currentTarget.src = `https://via.placeholder.com/64x64/374151/ffffff?text=${encodeURIComponent(bank.name)}`;
+                        e.currentTarget.alt = `Placeholder for ${bank.name} logo`;
                       }}
                     />
                     <div className="absolute inset-0 bg-orange-400 rounded-full blur-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
                   </div>
-                  <h3 className="text-lg font-semibold text-white text-center group-hover:text-orange-400 transition-colors">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-white text-center group-hover:text-orange-400 transition-colors leading-tight">
                     {bank.name}
                   </h3>
                 </div>

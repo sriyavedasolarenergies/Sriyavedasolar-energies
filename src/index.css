@@ -146,3 +146,33 @@ html {
     padding-right: 2rem;
   }
 }
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus indicators */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #ff7a00;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .bg-gradient-to-r.from-orange-500.to-orange-600 {
+    background: #ff7a00;
+  }
+
+  .bg-teal-500 {
+    background: #00c3b3;
+  }
+}

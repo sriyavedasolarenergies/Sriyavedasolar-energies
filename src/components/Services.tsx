@@ -140,33 +140,48 @@ const Services = () => {
           </div>
         </ScrollAnimation>
 
-        {/* Horizontal Scrolling Image Gallery */}
+        {/* Auto-scrolling Carousel */}
         <ScrollAnimation direction="up" delay={0.6}>
           <div className="mt-20">
             <h3 className="text-3xl font-bold text-center text-white mb-12">
               Our Solar Installations
             </h3>
-            
-            {/* Scrolling Container */}
-            <div className="relative overflow-hidden bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-2xl p-6">
-              <div className="flex gap-6 md:animate-scroll-right-to-left">
+
+            {/* Carousel Container */}
+            <div className="relative overflow-hidden bg-gradient-to-r from-gray-800/50 to-gray-900/50 rounded-2xl p-4 sm:p-6">
+              <div
+                className="flex gap-4 sm:gap-6 carousel-scroll"
+                style={{
+                  width: 'calc(200px * 34)', // 17 images * 2 for seamless loop
+                }}
+              >
                 {/* First set of images */}
                 {images.map((image, index) => (
                   <div
                     key={`first-${index}`}
-                    className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
+                    className="flex-shrink-0 w-48 sm:w-56 md:w-64 h-40 sm:h-48 md:h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
                     onClick={() => openImageModal(index)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View solar installation ${index + 1}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openImageModal(index);
+                      }
+                    }}
                   >
                     <img
                       src={image}
                       alt={`Solar Installation ${index + 1}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center justify-center">
-                          <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                           </div>
@@ -175,24 +190,34 @@ const Services = () => {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Duplicate set for seamless loop */}
                 {images.map((image, index) => (
                   <div
                     key={`second-${index}`}
-                    className="flex-shrink-0 w-64 sm:w-72 md:w-80 h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
+                    className="flex-shrink-0 w-48 sm:w-56 md:w-64 h-40 sm:h-48 md:h-56 cursor-pointer group overflow-hidden rounded-xl shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
                     onClick={() => openImageModal(index)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`View solar installation ${index + 1}`}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openImageModal(index);
+                      }
+                    }}
                   >
                     <img
                       src={image}
                       alt={`Solar Installation ${index + 1}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="flex items-center justify-center">
-                          <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                           </div>
@@ -204,17 +229,56 @@ const Services = () => {
               </div>
             </div>
 
-            {/* Scroll Indicators */}
-            <div className="flex justify-center mt-6 space-x-2">
+            {/* Carousel Controls */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button
+                className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors duration-300"
+                onClick={() => {
+                  const carousel = document.querySelector('.carousel-scroll') as HTMLElement;
+                  if (carousel) {
+                    carousel.style.animationPlayState = 'paused';
+                    carousel.scrollBy({ left: -200, behavior: 'smooth' });
+                    setTimeout(() => {
+                      if (carousel) carousel.style.animationPlayState = 'running';
+                    }, 1000);
+                  }
+                }}
+                aria-label="Previous images"
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
               <div className="flex space-x-1">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <div
                     key={index}
                     className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"
                     style={{ animationDelay: `${index * 0.2}s` }}
+                    aria-hidden="true"
                   />
                 ))}
               </div>
+
+              <button
+                className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors duration-300"
+                onClick={() => {
+                  const carousel = document.querySelector('.carousel-scroll') as HTMLElement;
+                  if (carousel) {
+                    carousel.style.animationPlayState = 'paused';
+                    carousel.scrollBy({ left: 200, behavior: 'smooth' });
+                    setTimeout(() => {
+                      if (carousel) carousel.style.animationPlayState = 'running';
+                    }, 1000);
+                  }
+                }}
+                aria-label="Next images"
+              >
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </ScrollAnimation>
@@ -296,8 +360,8 @@ const Services = () => {
         </ScrollAnimation>
       </div>
 
-      <style jsx>{`
-        @keyframes scroll-right-to-left {
+      <style>{`
+        @keyframes carousel-scroll {
           0% {
             transform: translateX(0);
           }
@@ -306,17 +370,23 @@ const Services = () => {
           }
         }
 
-        .animate-scroll-right-to-left {
-          animation: scroll-right-to-left 40s linear infinite;
+        .carousel-scroll {
+          animation: carousel-scroll 60s linear infinite;
         }
 
-        .animate-scroll-right-to-left:hover {
+        .carousel-scroll:hover {
           animation-play-state: paused;
         }
 
         @media (max-width: 768px) {
-          .animate-scroll-right-to-left {
-            animation: none !important;
+          .carousel-scroll {
+            animation-duration: 40s;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .carousel-scroll {
+            animation-duration: 30s;
           }
         }
       `}</style>

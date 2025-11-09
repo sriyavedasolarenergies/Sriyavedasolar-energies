@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Menu, X, Sun, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { href: '#home', label: 'Home' },
+    { href: '/', label: 'Home', isRoute: true },
     { href: '#about', label: 'About' },
     { href: '#partner-banks', label: 'Partner Banks' },
     { href: '#services', label: 'Services' },
     { href: '#calculator', label: 'Calculator' },
     { href: '#quotation', label: 'Quotation' },
-    { href: '#partners', label: 'Partners' },
+    { href: '/partners', label: 'Partners', isRoute: true },
     { href: '#contact', label: 'Contact' }
   ];
 
@@ -36,15 +38,27 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="text-white hover:text-orange-400 transition-colors duration-300 relative group"
-              >
-                {item.label}
-                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
-                <div className="absolute inset-0 bg-orange-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></div>
-              </a>
+              item.isRoute ? (
+                <button
+                  key={item.href}
+                  onClick={() => navigate(item.href)}
+                  className="text-white hover:text-orange-400 transition-colors duration-300 relative group"
+                >
+                  {item.label}
+                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-orange-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></div>
+                </button>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="text-white hover:text-orange-400 transition-colors duration-300 relative group"
+                >
+                  {item.label}
+                  <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-orange-500/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 -z-10"></div>
+                </a>
+              )
             ))}
           </nav>
 
@@ -75,14 +89,27 @@ const Header = () => {
         <div className="md:hidden bg-black/95 backdrop-blur-lg border-b border-orange-500/20 transition-all duration-300">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="block px-3 py-2 text-white hover:text-orange-400 hover:bg-orange-500/10 rounded-md transition-all duration-300"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.label}
-              </a>
+              item.isRoute ? (
+                <button
+                  key={item.href}
+                  onClick={() => {
+                    navigate(item.href);
+                    setIsMenuOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 text-white hover:text-orange-400 hover:bg-orange-500/10 rounded-md transition-all duration-300"
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="block px-3 py-2 text-white hover:text-orange-400 hover:bg-orange-500/10 rounded-md transition-all duration-300"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </a>
+              )
             ))}
             <button className="w-full mt-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300">
               Get Quote

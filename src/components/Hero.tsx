@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Zap, Sun, Moon, Battery, Leaf } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [animationActive, setAnimationActive] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
@@ -139,7 +141,7 @@ const Hero = () => {
             </button>
 
             <button
-              onClick={() => setShowMapModal(true)}
+              onClick={() => navigate('/partners')}
               className="group bg-[#FF6600] text-white px-6 sm:px-8 py-4 rounded-full hover:bg-[#E55A00] transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#FF6600]/30 min-h-[44px] w-full sm:w-auto"
             >
               <span className="font-semibold text-sm sm:text-base">Our Channel Partners</span>
@@ -176,10 +178,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Map Modal */}
-      {showMapModal && (
-        <MapModal onClose={() => setShowMapModal(false)} />
-      )}
+
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
@@ -191,179 +190,6 @@ const Hero = () => {
   );
 };
 
-// Map Modal Component
-const MapModal = ({ onClose }: { onClose: () => void }) => {
-  const cities = [
-    { name: 'Palakollu', x: 15, y: 35 },
-    { name: 'Narasapuram', x: 20, y: 40 },
-    { name: 'Mogalathuru', x: 25, y: 45 },
-    { name: 'Bhimavaram', x: 30, y: 50 },
-    { name: 'Gokavaram', x: 35, y: 55 },
-    { name: 'Kakinada', x: 40, y: 60 },
-    { name: 'JRG', x: 45, y: 65 },
-    { name: 'Tenali', x: 50, y: 70 }
-  ];
 
-  const scrollToCity = (cityName: string) => {
-    const element = document.getElementById(`city-${cityName.toLowerCase()}`);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      // Keep modal open so user can see the city section below
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden relative animate-fade-in">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors"
-        >
-          <span className="text-black text-xl font-bold">×</span>
-        </button>
-
-        {/* Modal Header */}
-        <div className="bg-gradient-to-r from-[#FF6600] to-[#E55A00] text-white p-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-center">
-            Our Channel Partners in Andhra Pradesh
-          </h2>
-          <p className="text-center mt-2 opacity-90">
-            Click on the markers to explore our partners in different cities
-          </p>
-        </div>
-
-        {/* Map Container */}
-        <div className="p-6">
-          <div className="relative bg-gradient-to-br from-blue-50 to-green-50 rounded-2xl overflow-hidden shadow-lg">
-            {/* Andhra Pradesh Map Background */}
-            <div className="aspect-[4/3] relative">
-              {/* Simplified Andhra Pradesh Map Shape */}
-              <svg viewBox="0 0 400 300" className="w-full h-full">
-                {/* Andhra Pradesh Outline */}
-                <path
-                  d="M50,50 L350,50 L370,80 L360,120 L340,140 L320,160 L300,180 L280,200 L260,220 L240,240 L220,260 L200,270 L180,280 L160,285 L140,280 L120,270 L100,250 L80,230 L70,200 L60,170 L50,140 Z"
-                  fill="#E3F2FD"
-                  stroke="#1976D2"
-                  strokeWidth="2"
-                />
-                
-                {/* Coastal Line */}
-                <path
-                  d="M50,50 L350,50 L370,80 L360,120 L340,140 L320,160 L300,180 L280,200 L260,220 L240,240 L220,260 L200,270 L180,280 L160,285"
-                  fill="none"
-                  stroke="#0277BD"
-                  strokeWidth="3"
-                  opacity="0.6"
-                />
-
-                {/* City Markers */}
-                {cities.map((city, index) => (
-                  <g key={city.name}>
-                    {/* Marker */}
-                    <circle
-                      cx={city.x * 4}
-                      cy={city.y * 3}
-                      r="8"
-                      fill="#FF6600"
-                      className="cursor-pointer hover:r-10 transition-all duration-300 animate-pulse"
-                      onClick={() => scrollToCity(city.name)}
-                    />
-                    
-                    {/* Marker Pulse Effect */}
-                    <circle
-                      cx={city.x * 4}
-                      cy={city.y * 3}
-                      r="12"
-                      fill="none"
-                      stroke="#FF6600"
-                      strokeWidth="2"
-                      opacity="0.3"
-                      className="animate-ping"
-                    />
-
-                    {/* Tooltip */}
-                    <text
-                      x={city.x * 4}
-                      y={city.y * 3 - 15}
-                      textAnchor="middle"
-                      className="text-xs font-semibold fill-gray-700 pointer-events-none"
-                    >
-                      {city.name}
-                    </text>
-                  </g>
-                ))}
-
-                {/* Company Branding */}
-                <g className="animate-bounce">
-                  <rect
-                    x="150"
-                    y="130"
-                    width="100"
-                    height="40"
-                    fill="#FF6600"
-                    rx="20"
-                    className="animate-pulse"
-                  />
-                  <text
-                    x="200"
-                    y="150"
-                    textAnchor="middle"
-                    className="text-sm font-bold fill-white"
-                  >
-                    Sriyaveda Solar
-                  </text>
-                </g>
-
-                {/* Location Label */}
-                <text
-                  x="200"
-                  y="180"
-                  textAnchor="middle"
-                  className="text-lg font-bold fill-gray-800 animate-fade-in"
-                >
-                  Andhra Pradesh
-                </text>
-              </svg>
-            </div>
-
-            {/* Legend */}
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-[#FF6600] rounded-full animate-pulse"></div>
-                <span className="text-sm font-semibold text-gray-700">Channel Partner Locations</span>
-              </div>
-            </div>
-          </div>
-
-          {/* City Sections */}
-          <div className="mt-8 space-y-6">
-            {cities.map((city) => (
-              <div
-                key={city.name}
-                id={`city-${city.name.toLowerCase()}`}
-                className="bg-gray-50 rounded-xl p-6 border-l-4 border-[#FF6600]"
-              >
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{city.name}</h3>
-                <p className="text-gray-600">
-                  Our channel partner in {city.name} provides comprehensive solar installation services,
-                  maintenance, and support. Contact them for personalized solar solutions in your area.
-                </p>
-                <div className="mt-4 flex space-x-4">
-                  <button className="bg-[#FF6600] text-white px-4 py-2 rounded-lg hover:bg-[#E55A00] transition-colors">
-                    Contact Partner
-                  </button>
-                  <button className="border border-[#FF6600] text-[#FF6600] px-4 py-2 rounded-lg hover:bg-[#FF6600] hover:text-white transition-colors">
-                    View Details
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default Hero;

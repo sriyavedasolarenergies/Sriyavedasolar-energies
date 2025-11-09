@@ -18,6 +18,10 @@
 - [ ] Verify no horizontal scrolling on any device
 - [ ] Check touch interaction on mobile devices
 - [ ] Ensure smooth scrolling behavior
+- [ ] Test interactive map modal functionality
+- [ ] Verify partner bank grid responsiveness
+- [ ] Test auto-scrolling carousel with pause on hover
+- [ ] Check accessibility features (ARIA labels, keyboard navigation)
 
 ## Technical Implementation Details
 - **Layout**: Used CSS Grid and Flexbox for alignment and spacing
