@@ -1,16 +1,15 @@
-# Responsive Design Fixes for Mobile, Tablet, Laptop & Desktop
+# Responsive Design Fixes - TODO
 
-## Issues Identified
-- [x] Services component image gallery too wide for mobile screens
-- [x] ChatBot window exceeds mobile screen width
-- [x] Hero component absolute elements causing horizontal scroll on mobile
+## Completed Tasks
+- [x] Make ChatBot window responsive: `w-80 sm:w-96` (removed fixed height)
+- [x] Hide problematic absolute elements in Hero component on mobile: changed `hidden md:block` to `hidden lg:block`
 
-## Files to Edit
-- [x] src/components/Services.tsx - Make image gallery responsive
-- [x] src/components/ChatBot.tsx - Make chat window responsive
-- [x] src/components/Hero.tsx - Hide problematic absolute elements on mobile
+## Remaining Tasks
+- [ ] Test the changes on different screen sizes
+- [ ] Verify mobile display within margins
+- [ ] Check for any other responsive issues
 
-## Additional Checks Needed
-- [ ] Check other components for responsive issues
-- [ ] Test on different screen sizes
-- [ ] Ensure proper margins and padding across all devices
+## Notes
+- Services component image gallery already has responsive classes: `w-64 sm:w-72 md:w-80`
+- WhatsApp chat window already has responsive positioning in index.css
+- Hero component absolute elements now hidden on screens smaller than lg (1024px)

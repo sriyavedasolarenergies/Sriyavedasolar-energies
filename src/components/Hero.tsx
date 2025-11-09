@@ -43,17 +43,17 @@ const Hero = () => {
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         {/* Floating Solar Panels */}
-        <div className="hidden md:block absolute top-20 left-10 w-16 h-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform rotate-12 animate-pulse opacity-20"></div>
-        <div className="hidden md:block absolute top-40 right-20 w-20 h-14 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform -rotate-12 animate-pulse opacity-20 animation-delay-1000"></div>
-        <div className="hidden md:block absolute bottom-40 left-20 w-14 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform rotate-45 animate-pulse opacity-20 animation-delay-2000"></div>
-        
+        <div className="hidden lg:block absolute top-20 left-10 w-16 h-12 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform rotate-12 animate-pulse opacity-20"></div>
+        <div className="hidden lg:block absolute top-40 right-20 w-20 h-14 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform -rotate-12 animate-pulse opacity-20 animation-delay-1000"></div>
+        <div className="hidden lg:block absolute bottom-40 left-20 w-14 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-md transform rotate-45 animate-pulse opacity-20 animation-delay-2000"></div>
+
         {/* Sun Rays */}
-        <div className="hidden md:block absolute top-20 right-10 w-32 h-32">
+        <div className="hidden lg:block absolute top-20 right-10 w-32 h-32">
           <div className="absolute inset-0 bg-gradient-radial from-orange-400 to-transparent opacity-10 rounded-full animate-ping animation-delay-500"></div>
         </div>
-        
+
         {/* Energy Flow Lines */}
-        <div className="absolute inset-0 hidden md:block">
+        <div className="absolute inset-0 hidden lg:block">
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
