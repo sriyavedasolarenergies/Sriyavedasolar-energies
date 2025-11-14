@@ -41,6 +41,7 @@ const Calculator = () => {
   const [selectedLocation, setSelectedLocation] = useState<LocationData | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredLocations, setFilteredLocations] = useState<LocationData[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState<boolean>(false);
 
   const locations = [
     // Coastal Andhra Pradesh
@@ -647,16 +648,65 @@ const Calculator = () => {
                 <label className="block text-white font-semibold mb-3">
                   Location
                 </label>
-                <button
-                  onClick={() => setShowMapModal(true)}
-                  className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 hover:border-orange-400 focus:border-orange-400 focus:outline-none transition-colors flex items-center justify-between"
-                >
-                  <span className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-2 text-orange-400" />
-                    {location} ({locationData.sunHours} sun hours/day)
-                  </span>
-                  <span className="text-gray-400 text-sm">Click to select location</span>
-                </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setShowCityDropdown(!showCityDropdown)}
+                    className="w-full bg-gray-700 text-white rounded-xl px-4 py-3 border border-gray-600 hover:border-orange-400 focus:border-orange-400 focus:outline-none transition-colors flex items-center justify-between"
+                  >
+                    <span className="flex items-center">
+                      <MapPin className="h-5 w-5 mr-2 text-orange-400" />
+                      {location} ({locationData.sunHours} sun hours/day)
+                    </span>
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </button>
+
+                  {/* City Dropdown */}
+                  {showCityDropdown && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-600 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto">
+                      <div className="p-2">
+                        <input
+                          type="text"
+                          placeholder="Search cities..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 border border-gray-600 focus:border-orange-400 focus:outline-none text-sm"
+                        />
+                      </div>
+                      <div className="max-h-40 overflow-y-auto">
+                        {(searchQuery.trim() === '' ? locations.slice(0, 10) : locations.filter(loc =>
+                          loc.name.toLowerCase().includes(searchQuery.toLowerCase())
+                        )).map((loc, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              setLocation(loc.name);
+                              setLocationData(loc);
+                              setShowCityDropdown(false);
+                              setSearchQuery('');
+                            }}
+                            className="w-full text-left px-4 py-3 hover:bg-gray-700 transition-colors border-b border-gray-700 last:border-b-0"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-white font-medium">{loc.name}</span>
+                              <span className="text-gray-400 text-sm">{loc.sunHours} sun hrs/day</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="p-2 border-t border-gray-700">
+                        <button
+                          onClick={() => {
+                            setShowMapModal(true);
+                            setShowCityDropdown(false);
+                          }}
+                          className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-2 px-4 rounded-lg hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 text-sm font-medium"
+                        >
+                          Open Map for More Locations
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* System Type */}
@@ -734,7 +784,530 @@ const Calculator = () => {
                   </div>
                 </div>
 
-                <button className="w-full mt-8 bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-4 rounded-xl font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                <button
+                  onClick={async () => {
+                    // Generate detailed quotation PDF
+                    const detailedQuotationHTML = `
+                      <!DOCTYPE html>
+                      <html>
+                        <head>
+                          <title>Detailed Solar Quote - Sriyaveda Solar Energies</title>
+                          <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+                            * { box-sizing: border-box; }
+                            body {
+                              font-family: 'Inter', Arial, sans-serif;
+                              margin: 0;
+                              padding: 20px;
+                              background: linear-gradient(to bottom, #111827, #000000);
+                              color: #ffffff;
+                              -webkit-print-color-adjust: exact;
+                              print-color-adjust: exact;
+                            }
+                            .quotation-container {
+                              max-width: 900px;
+                              margin: 0 auto;
+                              background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+                              border: 2px solid #FFB400;
+                              border-radius: 12px;
+                              overflow: hidden;
+                              box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                              page-break-inside: avoid;
+                              font-family: 'Inter', Arial, sans-serif;
+                              line-height: 1.4;
+                            }
+                            .header {
+                              background: linear-gradient(135deg, #FFB400, #0AA6F1);
+                              padding: 20px;
+                              text-align: center;
+                              color: white;
+                              position: relative;
+                            }
+                            .logo-section {
+                              display: flex;
+                              align-items: center;
+                              justify-content: center;
+                              margin-bottom: 15px;
+                            }
+                            .logo {
+                              width: 70px;
+                              height: 70px;
+                              margin-right: 15px;
+                              border-radius: 8px;
+                              background: white;
+                              padding: 5px;
+                            }
+                            .company-name {
+                              font-size: 28px;
+                              font-weight: 700;
+                              margin: 0;
+                              text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+                            }
+                            .company-address {
+                              font-size: 14px;
+                              opacity: 0.9;
+                              margin: 5px 0 0 0;
+                            }
+                            .company-details {
+                              display: flex;
+                              justify-content: center;
+                              align-items: center;
+                              margin-top: 10px;
+                              font-size: 12px;
+                              background: rgba(255,255,255,0.1);
+                              padding: 10px;
+                              border-radius: 6px;
+                            }
+                            .quotation-meta {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr 1fr;
+                              gap: 8px;
+                              font-size: 11px;
+                              margin-top: 8px;
+                            }
+                            .meta-item {
+                              background: rgba(255,255,255,0.1);
+                              padding: 8px;
+                              border-radius: 4px;
+                            }
+                            .customer-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .section-title {
+                              color: #1B3B5F;
+                              font-size: 18px;
+                              font-weight: 600;
+                              margin-bottom: 15px;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                            }
+                            .customer-grid {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr;
+                              gap: 12px;
+                            }
+                            .customer-field {
+                              background: #333;
+                              padding: 12px;
+                              border-radius: 6px;
+                              border-left: 3px solid #0AA6F1;
+                            }
+                            .field-label {
+                              font-size: 10px;
+                              color: #ccc;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 3px;
+                              font-weight: 600;
+                            }
+                            .field-value {
+                              font-size: 14px;
+                              font-weight: 500;
+                              color: #ffffff;
+                            }
+                            .system-details-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .system-details-grid {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr 1fr;
+                              gap: 15px;
+                            }
+                            .system-detail-item {
+                              background: #333;
+                              padding: 15px;
+                              border-radius: 6px;
+                              text-align: center;
+                              border: 1px solid #555;
+                            }
+                            .system-detail-label {
+                              font-size: 12px;
+                              color: #ccc;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 6px;
+                            }
+                            .system-detail-value {
+                              font-size: 16px;
+                              font-weight: 600;
+                              color: #0AA6F1;
+                            }
+                            .financial-breakdown-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .financial-table {
+                              width: 100%;
+                              border-collapse: collapse;
+                              margin-top: 15px;
+                            }
+                            .financial-table th,
+                            .financial-table td {
+                              padding: 12px;
+                              text-align: left;
+                              border-bottom: 1px solid #555;
+                            }
+                            .financial-table th {
+                              background: #333;
+                              color: #FFB400;
+                              font-weight: 600;
+                              text-transform: uppercase;
+                              font-size: 12px;
+                              letter-spacing: 0.5px;
+                            }
+                            .financial-table td {
+                              color: #ffffff;
+                              font-size: 13px;
+                            }
+                            .financial-table .total-row {
+                              background: #FFB400;
+                              color: #000;
+                              font-weight: 700;
+                            }
+                            .benefits-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .benefits-grid {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr;
+                              gap: 15px;
+                            }
+                            .benefit-item {
+                              background: #333;
+                              padding: 15px;
+                              border-radius: 6px;
+                              border-left: 3px solid #FFB400;
+                            }
+                            .benefit-title {
+                              font-size: 14px;
+                              font-weight: 600;
+                              color: #FFB400;
+                              margin-bottom: 6px;
+                            }
+                            .benefit-value {
+                              font-size: 13px;
+                              color: #ffffff;
+                            }
+                            .roi-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .roi-grid {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr 1fr;
+                              gap: 15px;
+                            }
+                            .roi-item {
+                              background: #333;
+                              padding: 15px;
+                              border-radius: 6px;
+                              text-align: center;
+                            }
+                            .roi-label {
+                              font-size: 12px;
+                              color: #ccc;
+                              text-transform: uppercase;
+                              letter-spacing: 0.5px;
+                              margin-bottom: 6px;
+                            }
+                            .roi-value {
+                              font-size: 18px;
+                              font-weight: 700;
+                              color: #0AA6F1;
+                            }
+                            .notes-section {
+                              padding: 20px;
+                              border-bottom: 1px solid #444;
+                            }
+                            .notes-box {
+                              background: #333;
+                              border: 1px solid #555;
+                              padding: 15px;
+                              border-radius: 6px;
+                            }
+                            .notes-title {
+                              color: #FFB400;
+                              font-size: 14px;
+                              font-weight: 600;
+                              margin-bottom: 8px;
+                            }
+                            .notes-text {
+                              color: #ccc;
+                              font-size: 12px;
+                              line-height: 1.5;
+                            }
+                            .signature-section {
+                              padding: 20px;
+                            }
+                            .signature-grid {
+                              display: grid;
+                              grid-template-columns: 1fr 1fr;
+                              gap: 50px;
+                            }
+                            .signature-box {
+                              text-align: center;
+                            }
+                            .signature-line {
+                              border-bottom: 1px solid #666;
+                              margin: 40px 0 10px 0;
+                            }
+                            .signature-label {
+                              color: #ccc;
+                              font-size: 12px;
+                              font-weight: 500;
+                            }
+                            .footer {
+                              background: #1B3B5F;
+                              padding: 15px;
+                              text-align: center;
+                              color: white;
+                              font-size: 11px;
+                            }
+                            @media print {
+                              body { margin: 0; }
+                              .quotation-container { box-shadow: none; border: none; }
+                            }
+                          </style>
+                        </head>
+                        <body>
+                          <div class="quotation-container">
+                            <!-- Header -->
+                            <div class="header">
+                              <div class="logo-section">
+                                <img src="/logo.png" alt="Sriyaveda Solar Energies Logo" class="logo">
+                                <div>
+                                  <h1 class="company-name">SRIYAVEDA SOLAR ENERGIES</h1>
+                                  <p class="company-address">F No-403, Yalakkaya Street, Near Clock Tower, Eluru - 534001, Andhra Pradesh</p>
+                                </div>
+                              </div>
+                              <div class="company-details">
+                                <div>
+                                  <strong>Cell:</strong> 9440788850 | <strong>Email:</strong> sriyavedasolarenergies@gmail.com | <strong>Website:</strong> sriyavedasolarenergies.in
+                                </div>
+                              </div>
+                              <div class="quotation-meta">
+                                <div class="meta-item">
+                                  <strong>Quote Date:</strong> ${new Date().toLocaleDateString('en-IN')}
+                                </div>
+                                <div class="meta-item">
+                                  <strong>Quote No:</strong> DQ-${Date.now().toString().slice(-6)}
+                                </div>
+                                <div class="meta-item">
+                                  <strong>Location:</strong> ${location}
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Customer Details -->
+                            <div class="customer-section">
+                              <h2 class="section-title">Customer Details</h2>
+                              <div class="customer-grid">
+                                <div class="customer-field">
+                                  <div class="field-label">Name</div>
+                                  <div class="field-value">********</div>
+                                </div>
+                                <div class="customer-field">
+                                  <div class="field-label">Address</div>
+                                  <div class="field-value">********</div>
+                                </div>
+                                <div class="customer-field">
+                                  <div class="field-label">Phone</div>
+                                  <div class="field-value">********</div>
+                                </div>
+                                <div class="customer-field">
+                                  <div class="field-label">Email</div>
+                                  <div class="field-value">********</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- System Details -->
+                            <div class="system-details-section">
+                              <h2 class="section-title">Solar System Details</h2>
+                              <div class="system-details-grid">
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">System Size</div>
+                                  <div class="system-detail-value">${result.systemSize} kW</div>
+                                </div>
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">System Type</div>
+                                  <div class="system-detail-value">${systemTypes.find(sys => sys.value === systemType)?.label}</div>
+                                </div>
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">Location</div>
+                                  <div class="system-detail-value">${location}</div>
+                                </div>
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">Daily Generation</div>
+                                  <div class="system-detail-value">${(result.systemSize * locationData.sunHours).toFixed(1)} kWh</div>
+                                </div>
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">Monthly Generation</div>
+                                  <div class="system-detail-value">${(result.systemSize * locationData.sunHours * 30).toFixed(0)} kWh</div>
+                                </div>
+                                <div class="system-detail-item">
+                                  <div class="system-detail-label">Sun Hours/Day</div>
+                                  <div class="system-detail-value">${locationData.sunHours} hours</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Financial Breakdown -->
+                            <div class="financial-breakdown-section">
+                              <h2 class="section-title">Financial Breakdown</h2>
+                              <table class="financial-table">
+                                <thead>
+                                  <tr>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>Solar PV System (${result.systemSize} kW)</td>
+                                    <td>₹${(result.totalCost * 0.7).toLocaleString('en-IN')}</td>
+                                    <td>Includes panels, inverter, wiring</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Installation & Civil Work</td>
+                                    <td>₹${(result.totalCost * 0.2).toLocaleString('en-IN')}</td>
+                                    <td>Mounting structure, foundation</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Government Subsidy</td>
+                                    <td>-₹${(result.totalCost * 0.3).toLocaleString('en-IN')}</td>
+                                    <td>30% MNRE subsidy</td>
+                                  </tr>
+                                  <tr>
+                                    <td>Transportation & Miscellaneous</td>
+                                    <td>₹${(result.totalCost * 0.1).toLocaleString('en-IN')}</td>
+                                    <td>Delivery and other charges</td>
+                                  </tr>
+                                  <tr class="total-row">
+                                    <td><strong>Total Investment</strong></td>
+                                    <td><strong>₹${result.totalCost.toLocaleString('en-IN')}</strong></td>
+                                    <td>After subsidy</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                            <!-- Benefits -->
+                            <div class="benefits-section">
+                              <h2 class="section-title">Financial Benefits</h2>
+                              <div class="benefits-grid">
+                                <div class="benefit-item">
+                                  <div class="benefit-title">Monthly Savings</div>
+                                  <div class="benefit-value">₹${result.monthlySavings.toLocaleString('en-IN')}</div>
+                                </div>
+                                <div class="benefit-item">
+                                  <div class="benefit-title">Yearly Savings</div>
+                                  <div class="benefit-value">₹${result.yearlySavings.toLocaleString('en-IN')}</div>
+                                </div>
+                                <div class="benefit-item">
+                                  <div class="benefit-title">Payback Period</div>
+                                  <div class="benefit-value">${result.paybackPeriod.toFixed(1)} years</div>
+                                </div>
+                                <div class="benefit-item">
+                                  <div class="benefit-title">25-Year Savings</div>
+                                  <div class="benefit-value">₹${(result.yearlySavings * 25).toLocaleString('en-IN')}</div>
+                                </div>
+                                <div class="benefit-item">
+                                  <div class="benefit-title">CO₂ Reduction</div>
+                                  <div class="benefit-value">${result.carbonOffset.toFixed(1)} tons/year</div>
+                                </div>
+                                <div class="benefit-item">
+                                  <div class="benefit-title">Return on Investment</div>
+                                  <div class="benefit-value">${((result.yearlySavings / result.totalCost) * 100).toFixed(1)}% per year</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- ROI Projection -->
+                            <div class="roi-section">
+                              <h2 class="section-title">10-Year ROI Projection</h2>
+                              <div class="roi-grid">
+                                <div class="roi-item">
+                                  <div class="roi-label">Year 1 Savings</div>
+                                  <div class="roi-value">₹${result.yearlySavings.toLocaleString('en-IN')}</div>
+                                </div>
+                                <div class="roi-item">
+                                  <div class="roi-label">Year 5 Savings</div>
+                                  <div class="roi-value">₹${(result.yearlySavings * 5).toLocaleString('en-IN')}</div>
+                                </div>
+                                <div class="roi-item">
+                                  <div class="roi-label">Year 10 Savings</div>
+                                  <div class="roi-value">₹${(result.yearlySavings * 10).toLocaleString('en-IN')}</div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="notes-section">
+                              <div class="notes-box">
+                                <div class="notes-title">Important Terms & Conditions</div>
+                                <div class="notes-text">
+                                  • This quotation is valid for 30 days from the date of issue<br>
+                                  • System sizing is based on your current electricity consumption and available roof area<br>
+                                  • Actual generation may vary based on weather conditions and system orientation<br>
+                                  • Government subsidies are subject to eligibility and availability<br>
+                                  • Installation timeline: 15-20 working days after payment<br>
+                                  • 25-year comprehensive warranty on solar panels<br>
+                                  • 5-year warranty on inverter and 2-year warranty on other components<br>
+                                  • Terms and conditions apply. Contact us for detailed project proposal
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Signature -->
+                            <div class="signature-section">
+                              <div class="signature-grid">
+                                <div class="signature-box">
+                                  <div class="signature-line"></div>
+                                  <div class="signature-label">Customer Signature</div>
+                                </div>
+                                <div class="signature-box">
+                                  <div class="signature-line"></div>
+                                  <div class="signature-label">Authorized Signatory</div>
+                                  <div style="margin-top: 15px; font-size: 10px; color: #ccc;">
+                                    Sriyaveda Solar Energies
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Footer -->
+                            <div class="footer">
+                              <strong>SRIYAVEDA SOLAR ENERGIES</strong> | F No-403, Yalakkaya Street, Near Clock Tower, Eluru - 534001 | Cell: 9440788850
+                            </div>
+                          </div>
+                        </body>
+                      </html>
+                    `;
+
+                    const element = document.createElement('div');
+                    element.innerHTML = detailedQuotationHTML;
+                    document.body.appendChild(element);
+
+                    const { default: html2pdf } = await import('html2pdf.js');
+
+                    const options = {
+                      margin: 0.5,
+                      filename: `Detailed_Quote_Sriyaveda_Solar_${location}_${new Date().toISOString().split('T')[0]}.pdf`,
+                      image: { type: 'jpeg' as const, quality: 0.98 },
+                      html2canvas: { scale: 2, useCORS: true },
+                      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait', compress: true }
+                    } as any;
+
+                    await html2pdf().set(options).from(element).save();
+                    document.body.removeChild(element);
+                  }}
+                  className="w-full mt-8 bg-gradient-to-r from-orange-500 to-yellow-500 text-white py-4 rounded-xl font-semibold hover:from-orange-600 hover:to-yellow-600 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                >
                   <Download className="h-5 w-5" />
                   <span>Get Detailed Quote</span>
                   <ArrowRight className="h-5 w-5" />
