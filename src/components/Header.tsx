@@ -62,15 +62,7 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/30 group">
-              <span className="flex items-center space-x-2">
-                <Zap className="h-4 w-4 group-hover:animate-bounce" />
-                <span>Get Quote</span>
-              </span>
-            </button>
-          </div>
+
 
           {/* Mobile menu button */}
           <div className="md:hidden">
@@ -111,10 +103,6 @@ const Header = () => {
                 </a>
               )
             ))}
-            <button className="w-full mt-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-300">
-              Get Quote
-            </button>
-
           </div>
         </div>
       )}
